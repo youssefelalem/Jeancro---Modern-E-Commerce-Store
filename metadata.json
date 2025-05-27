@@ -1,0 +1,5 @@
+{
+  "name": "Jeancro - Modern E-commerce Store",
+  "description": "Jeancro is an online clothing store featuring product browsing, a shopping cart, WhatsApp ordering, a helpful chatbot, and an admin panel for comprehensive store management. Built with React, TypeScript, and Tailwind CSS, leveraging the Gemini API for its chatbot functionality.",
+  "requestFramePermissions": []
+}
