@@ -451,10 +451,8 @@ const HomePage: React.FC = () => {
     ad => ad.placement === 'homepage-banner'
   );
   const sidebarAds = activeAds.filter(ad => ad.placement === 'sidebar');
-
   const handleViewDetails = (product: Product) => {
-    setSelectedProduct(product);
-    setProductModalOpen(true);
+    window.location.href = `#/product/${product.id}`;
   };
 
   return (
@@ -924,13 +922,23 @@ function createCrudPage<T extends CrudItem>(
 const AdminProductsPage = createCrudPage<Product>(
   'manageProducts',
   () => useAppContext().products,
-  setter => useAppContext().setProducts(setter),
-  {
+  setter => useAppContext().setProducts(setter),  {
     name: { [LanguageCode.EN]: '', [LanguageCode.AR]: '' },
     description: { [LanguageCode.EN]: '', [LanguageCode.AR]: '' },
     price: 0,
     imageUrl: '',
     categoryId: '',
+    images: [],
+    details: {
+      [LanguageCode.EN]: {
+        features: [],
+        specifications: {}
+      },
+      [LanguageCode.AR]: {
+        features: [],
+        specifications: {}
+      }
+    }
   },
   (item, onChange, t, lang, categories, onLocalizedChange) => [
     <InputField
@@ -1324,6 +1332,8 @@ const ProtectedAdminRoute: React.FC<{ children: ReactNode }> = ({
 };
 
 // Main App Component
+import { ProductDetailsPage } from './ProductDetailsPage';
+
 const App: React.FC = () => {
   const {
     storeSettings,
@@ -1443,6 +1453,9 @@ const App: React.FC = () => {
               </ProtectedAdminRoute>
             }
           />
+          <Route path="/product/:productId" element={<ProductDetailsPage />} />          {/* مسار صفحة تفاصيل المنتج */}
+          <Route path='/product/:productId' element={<ProductDetailsPage />} />
+          
           {/* Catch-all for client-side, could redirect to home or a 404 component */}
           <Route path='*' element={<Navigate to='/' />} />
         </Routes>

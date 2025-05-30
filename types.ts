@@ -1,4 +1,3 @@
-
 export enum LanguageCode {
   EN = 'EN',
   AR = 'AR',
@@ -11,6 +10,17 @@ export interface Product {
   price: number;
   imageUrl: string;
   categoryId: string;
+  images: string[];
+  details: {
+    EN: {
+      features: string[];
+      specifications: { [key: string]: string };
+    };
+    AR: {
+      features: string[];
+      specifications: { [key: string]: string };
+    };
+  };
 }
 
 export interface Category {
@@ -61,6 +71,7 @@ export interface StoreSettings {
 export type TranslationKeys = 
   | 'appName' | 'home' | 'products' | 'cart' | 'admin' | 'login' | 'logout'
   | 'addToCart' | 'removeFromCart' | 'viewCart' | 'checkoutViaWhatsApp' | 'quantity'
+  | 'features' | 'specifications'
   | 'price' | 'total' | 'emptyCart' | 'searchProducts' | 'filterByCategory'
   | 'allCategories' | 'productName' | 'productDescription' | 'productPrice' | 'productCategory' | 'productImageURL'
   | 'categoryName' | 'adTitle' | 'adDescription' | 'adImageURL' | 'adLinkURL' | 'adPlacement' | 'adIsActive'

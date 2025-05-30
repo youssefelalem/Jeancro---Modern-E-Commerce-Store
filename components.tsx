@@ -561,7 +561,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={product.imageUrl}
           alt={product.name[currentLanguage] || product.name[LanguageCode.EN]}
-          className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+          className='max-w-full max-h-full object-cover group-hover:scale-105 transition-transform duration-300 object-position: center mx-auto'
         />
       </div>
       <div className='p-4 flex flex-col flex-grow'>

@@ -1,10 +1,9 @@
-
 import { Product, Category, Ad, FAQ, StoreSettings, LanguageCode, Translations } from './types';
 
 export const DEFAULT_LANGUAGE: LanguageCode = LanguageCode.EN;
 export const SUPPORTED_LANGUAGES: LanguageCode[] = [LanguageCode.EN, LanguageCode.AR];
 export const STORE_NAME = 'Jeancro';
-export const DEFAULT_CURRENCY_SYMBOL = '$';
+export const DEFAULT_CURRENCY_SYMBOL = 'mad ';
 export const WHATSAPP_NUMBER = '+12345678900'; // Replace with actual WhatsApp number
 export const ADMIN_MOCK_PASSWORD = 'admin'; // For demo purposes
 
@@ -17,55 +16,165 @@ export const INITIAL_CATEGORIES: Category[] = [
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
-  id: 'prod1',
-  name: { EN: 'Crochet Jacket', AR: 'جاكيت كروشيه' },
-  description: {
-    EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
-    AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
-  },
-  price: 950,
-  imageUrl: '/assets/img/image01.jpg',
-  categoryId: 'cat1',
-},
-  {
+    id: 'prod1',
+    name: { EN: 'Crochet Jacket', AR: 'جاكيت كروشيه' },
+    description: {
+      EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
+      AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
+    },
+    price: 950,
+    imageUrl: '/assets/img/image01.jpg',
+    categoryId: 'cat1',
+    // يمكنك إضافة حقول جديدة مثل:
+    images: ['/assets/img/image01.jpg','/assets/img/image05.jpg','assets/img/image06.jpg'],
+    details: {
+      EN: {
+        features: ['100% Cotton', 'Handmade', 'Vintage Design'],
+        specifications: {
+          'Material': 'Cotton',
+          'Size': 'L',
+          'Color': 'Cream & Brown'
+        }
+      },
+      AR: {
+        features: ['قطن 100%', 'صناعة يدوية', 'تصميم كلاسيكي'],
+        specifications: {
+          'الخامة': 'قطن',
+          'المقاس': 'L',
+          'اللون': 'كريمي وبني'
+        }
+      }
+    }
+  },  {
     id: 'prod2',
     name: { EN: 'Slim Fit Jeans', AR: 'جينز بقصة ضيقة' },
     description: { EN: 'Modern slim fit jeans for a stylish look.', AR: 'جينز عصري بقصة ضيقة لإطلالة أنيقة.' },
     price: 60,
     imageUrl: 'https://picsum.photos/seed/prod2/400/300',
     categoryId: 'cat1',
-  },
-  {
+    images: ['https://picsum.photos/seed/prod2/400/300', 'https://picsum.photos/seed/prod2b/400/300'],
+    details: {
+      EN: {
+        features: ['Slim Fit', 'Cotton Blend', 'Modern Design'],
+        specifications: {
+          'Material': 'Cotton & Elastane',
+          'Size': 'M',
+          'Color': 'Blue'
+        }
+      },
+      AR: {
+        features: ['قصة ضيقة', 'مزيج قطني', 'تصميم عصري'],
+        specifications: {
+          'الخامة': 'قطن وإيلاستين',
+          'المقاس': 'M',
+          'اللون': 'أزرق'
+        }
+      }
+    }
+  },  {
     id: 'prod3',
     name: { EN: 'Summer Dress', AR: 'فستان صيفي' },
     description: { EN: 'Light and airy summer dress.', AR: 'فستان صيفي خفيف ومتجدد الهواء.' },
     price: 45,
     imageUrl: 'https://picsum.photos/seed/prod3/400/300',
     categoryId: 'cat2',
-  },
-  {
+    images: ['https://picsum.photos/seed/prod3/400/300', 'https://picsum.photos/seed/prod3b/400/300'],
+    details: {
+      EN: {
+        features: ['Lightweight', 'Cotton Fabric', 'Summer Design'],
+        specifications: {
+          'Material': 'Cotton',
+          'Size': 'M',
+          'Color': 'White'
+        }
+      },
+      AR: {
+        features: ['خفيف الوزن', 'قماش قطني', 'تصميم صيفي'],
+        specifications: {
+          'الخامة': 'قطن',
+          'المقاس': 'M',
+          'اللون': 'أبيض'
+        }
+      }
+    }
+  },  {
     id: 'prod4',
     name: { EN: 'Leather Belt', AR: 'حزام جلدي' },
     description: { EN: 'Genuine leather belt with a classic buckle.', AR: 'حزام من الجلد الطبيعي بإبزيم كلاسيكي.' },
     price: 30,
     imageUrl: 'https://picsum.photos/seed/prod4/400/300',
     categoryId: 'cat4',
-  },
-  {
+    images: ['https://picsum.photos/seed/prod4/400/300', 'https://picsum.photos/seed/prod4b/400/300'],
+    details: {
+      EN: {
+        features: ['Genuine Leather', 'Classic Design', 'Durable'],
+        specifications: {
+          'Material': 'Leather',
+          'Size': 'M',
+          'Color': 'Brown'
+        }
+      },
+      AR: {
+        features: ['جلد طبيعي', 'تصميم كلاسيكي', 'متين'],
+        specifications: {
+          'الخامة': 'جلد',
+          'المقاس': 'M',
+          'اللون': 'بني'
+        }
+      }
+    }
+  },  {
     id: 'prod5',
     name: { EN: 'Kids Hoodie', AR: 'هودي أطفال' },
     description: { EN: 'Warm and cozy hoodie for kids.', AR: 'هودي دافئ ومريح للأطفال.' },
     price: 35,
     imageUrl: 'https://picsum.photos/seed/prod5/400/300',
     categoryId: 'cat3',
-  },
-  {
+    images: ['https://picsum.photos/seed/prod5/400/300', 'https://picsum.photos/seed/prod5b/400/300'],
+    details: {
+      EN: {
+        features: ['Warm Material', 'Kid Friendly', 'Easy Care'],
+        specifications: {
+          'Material': 'Cotton Blend',
+          'Size': 'Kids L',
+          'Color': 'Gray'
+        }
+      },
+      AR: {
+        features: ['خامة دافئة', 'مناسب للأطفال', 'سهل العناية'],
+        specifications: {
+          'الخامة': 'مزيج قطني',
+          'المقاس': 'L أطفال',
+          'اللون': 'رمادي'
+        }
+      }
+    }
+  },  {
     id: 'prod6',
     name: { EN: 'Elegant Blouse', AR: 'بلوزة أنيقة' },
     description: { EN: 'Chic blouse for formal or casual occasions.', AR: 'بلوزة أنيقة للمناسبات الرسمية أو غير الرسمية.' },
     price: 50,
     imageUrl: 'https://picsum.photos/seed/prod6/400/300',
     categoryId: 'cat2',
+    images: ['https://picsum.photos/seed/prod6/400/300', 'https://picsum.photos/seed/prod6b/400/300'],
+    details: {
+      EN: {
+        features: ['Elegant Design', 'Versatile Style', 'Premium Fabric'],
+        specifications: {
+          'Material': 'Silk Blend',
+          'Size': 'M',
+          'Color': 'White'
+        }
+      },
+      AR: {
+        features: ['تصميم أنيق', 'ستايل متعدد الاستخدامات', 'قماش فاخر'],
+        specifications: {
+          'الخامة': 'مزيج حرير',
+          'المقاس': 'M',
+          'اللون': 'أبيض'
+        }
+      }
+    }
   },
 ];
 
@@ -236,6 +345,8 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     close: 'Close',
     noAdsAvailable: 'No ads available at the moment.',
     learnMore: 'Learn More',
+    features: 'Features',
+    specifications: 'Specifications',
   },
   [LanguageCode.AR]: {
     appName: 'جينكرو',
@@ -352,5 +463,7 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     close: 'إغلاق',
     noAdsAvailable: 'لا توجد إعلانات متاحة في الوقت الحالي.',
     learnMore: 'اعرف المزيد',
+    features: 'المميزات',
+    specifications: 'المواصفات',
   },
 };
