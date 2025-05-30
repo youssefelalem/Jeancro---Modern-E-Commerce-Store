@@ -295,6 +295,40 @@ const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // Optionally navigate to home or login page
   };
 
+  // أضف هذه الوظيفة للتحقق من تطابق البيانات
+  const syncWithConstants = useCallback(() => {
+    const savedProducts = localStorage.getItem('jeancro-products');
+    const savedCategories = localStorage.getItem('jeancro-categories');
+    const savedAds = localStorage.getItem('jeancro-ads');
+    const savedFaqs = localStorage.getItem('jeancro-faqs');
+
+    // إذا كانت البيانات المحفوظة مختلفة عن الثوابت، استخدم الثوابت
+    if (JSON.stringify(JSON.parse(savedProducts || '[]')) !== JSON.stringify(INITIAL_PRODUCTS)) {
+      setProducts(INITIAL_PRODUCTS);
+      localStorage.setItem('jeancro-products', JSON.stringify(INITIAL_PRODUCTS));
+    }
+
+    if (JSON.stringify(JSON.parse(savedCategories || '[]')) !== JSON.stringify(INITIAL_CATEGORIES)) {
+      setCategories(INITIAL_CATEGORIES);
+      localStorage.setItem('jeancro-categories', JSON.stringify(INITIAL_CATEGORIES));
+    }
+
+    if (JSON.stringify(JSON.parse(savedAds || '[]')) !== JSON.stringify(INITIAL_ADS)) {
+      setAds(INITIAL_ADS);
+      localStorage.setItem('jeancro-ads', JSON.stringify(INITIAL_ADS));
+    }
+
+    if (JSON.stringify(JSON.parse(savedFaqs || '[]')) !== JSON.stringify(INITIAL_FAQS)) {
+      setFaqs(INITIAL_FAQS);
+      localStorage.setItem('jeancro-faqs', JSON.stringify(INITIAL_FAQS));
+    }
+  }, []);
+
+  // استدعاء الوظيفة عند بدء التطبيق
+  useEffect(() => {
+    syncWithConstants();
+  }, [syncWithConstants]);
+
   return (
     <AppContext.Provider
       value={{
@@ -1089,7 +1123,7 @@ const AdminAdsPage = createCrudPage<Ad>(
 );
 
 const AdminChatbotPage: React.FC = () => {
-  const { faqs, setFaqs, t } = useAppContext();
+  const { faqs, setFaqs } = useAppContext();
 
   const initialFaqState: Omit<FAQ, 'id'> = {
     question: { [LanguageCode.EN]: '', [LanguageCode.AR]: '' },

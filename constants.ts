@@ -17,13 +17,16 @@ export const INITIAL_CATEGORIES: Category[] = [
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
-    id: 'prod1',
-    name: { EN: 'Classic T-Shirt', AR: 'تيشيرت كلاسيكي' },
-    description: { EN: 'Comfortable cotton t-shirt for everyday wear.', AR: 'تيشيرت قطني مريح للارتداء اليومي.' },
-    price: 25,
-    imageUrl: 'https://picsum.photos/seed/prod1/400/300',
-    categoryId: 'cat1',
+  id: 'prod1',
+  name: { EN: 'Crochet Jacket', AR: 'جاكيت كروشيه' },
+  description: {
+    EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
+    AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
   },
+  price: 950,
+  imageUrl: '/assets/img/image01.jpg',
+  categoryId: 'cat1',
+},
   {
     id: 'prod2',
     name: { EN: 'Slim Fit Jeans', AR: 'جينز بقصة ضيقة' },

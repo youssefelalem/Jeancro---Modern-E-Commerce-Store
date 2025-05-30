@@ -677,7 +677,7 @@ interface AdBannerProps {
 export const AdBanner: React.FC<AdBannerProps> = ({
   ad,
   currentLanguage,
-  translations,
+  // translations,
 }) => {
   if (!ad.isActive) return null;
 
@@ -816,7 +816,7 @@ const CartItemCard: React.FC<CartItemCardProps> = ({
   onRemoveItem,
   onUpdateQuantity,
   currencySymbol,
-  translations,
+  // translations,
   currentLanguage,
 }) => {
   const handleQuantityChange = (newQuantity: number) => {
