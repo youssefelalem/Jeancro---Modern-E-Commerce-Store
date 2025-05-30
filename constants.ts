@@ -22,7 +22,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
       AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
     },
-    price: 950,
+    price: 50,
     imageUrl: '/assets/img/image01.jpg',
     categoryId: 'cat1',
     // يمكنك إضافة حقول جديدة مثل:
