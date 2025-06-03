@@ -545,6 +545,7 @@ interface ProductCardProps {
   translations: Translations;
   currentLanguage: LanguageCode;
   onViewDetails: (product: Product) => void;
+  className?: string;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -554,9 +555,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   translations,
   currentLanguage,
   onViewDetails,
+  className = '',
 }) => {
   return (
-    <div className='bg-white shadow-lg rounded-lg overflow-hidden flex flex-col group'>
+    <div className={`bg-white shadow-lg rounded-lg overflow-hidden flex flex-col group ${className}`}>
       <div className='relative h-56 w-full overflow-hidden'>
         <img
           src={product.imageUrl}
@@ -1146,7 +1148,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { to: '/admin/chatbot', labelKey: 'chatbotManagement' as TranslationKeys }, // This was manageFAQs, changed to chatbotManagement based on labelKey
     { to: '/admin/settings', labelKey: 'storeSettings' as TranslationKeys },
   ];
-
   return (
     <div
       className={`w-64 bg-white shadow-lg h-screen fixed top-0 ${currentLanguage === LanguageCode.AR ? 'right-0 border-l' : 'left-0 border-r'} flex flex-col`}
@@ -1156,6 +1157,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           {translations.admin}
         </h1>
       </div>
+      
+      {/* رابط العودة للمتجر */}
+      <div className='p-4 border-b'>
+        <Link
+          to='/'
+          className='flex items-center px-4 py-3 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-150 border border-indigo-200'
+        >
+          <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' />
+          </svg>
+          {translations.backToStore}
+        </Link>
+      </div>
+      
       <nav className='flex-grow p-4 space-y-2 overflow-y-auto'>
         {navItems.map(item => (
           <NavLink

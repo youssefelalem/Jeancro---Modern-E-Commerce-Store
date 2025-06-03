@@ -1,8 +1,11 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import TestApp from './TestApp';
 // Tailwind styles are loaded via CDN in index.html
+
+// تم تحديث index.tsx لتشغيل البنية الجديدة
+// يمكن استبدال TestApp بـ App للعودة للنسخة الأصلية
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -12,6 +15,6 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <TestApp />
   </React.StrictMode>
 );

@@ -26,7 +26,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     imageUrl: '/assets/img/image01.jpg',
     categoryId: 'cat1',
     // يمكنك إضافة حقول جديدة مثل:
-    images: ['/assets/img/image01.jpg','/assets/img/image05.jpg','assets/img/image06.jpg'],
+    images: ['/assets/img/image01.jpg','/assets/img/image05.jpg', '/assets/img/image06.jpg'],
     details: {
       EN: {
         features: ['100% Cotton', 'Handmade', 'Vintage Design'],
@@ -342,11 +342,11 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     search: 'Search',
     category: 'Category',
     productDetails: 'Product Details',
-    close: 'Close',
-    noAdsAvailable: 'No ads available at the moment.',
+    close: 'Close',    noAdsAvailable: 'No ads available at the moment.',
     learnMore: 'Learn More',
     features: 'Features',
     specifications: 'Specifications',
+    backToStore: 'Back to Store',
   },
   [LanguageCode.AR]: {
     appName: 'جينكرو',
@@ -456,14 +456,16 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     itemRemovedFromCart: 'تمت إزالة المنتج من السلة.',
     cartUpdated: 'تم تحديث السلة.',
     chatWithOurAssistant: 'تحدث مع مساعدنا',
-    howCanIHelpYou: 'كيف يمكنني مساعدتك اليوم؟',
-    search: 'بحث',
+    howCanIHelpYou: 'كيف يمكنني مساعدتك اليوم؟',    search: 'بحث',
     category: 'الفئة',
-    productDetails: 'تفاصيل المنتج',
-    close: 'إغلاق',
+    productDetails: 'تفاصيل المنتج',    close: 'إغلاق',
+    productNotFound: 'المنتج غير موجود',
+    goBack: 'العودة',
+    inStock: 'متوفر في المخزون',
     noAdsAvailable: 'لا توجد إعلانات متاحة في الوقت الحالي.',
     learnMore: 'اعرف المزيد',
     features: 'المميزات',
     specifications: 'المواصفات',
+    backToStore: 'العودة للمتجر',
   },
 };

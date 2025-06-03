@@ -84,11 +84,13 @@ export type TranslationKeys =
   | 'confirmDelete' | 'areYouSureDelete' | 'yesDelete' | 'noCancel' | 'actions' | 'description' | 'title' | 'link' | 'imageURL' | 'placement' | 'active'
   | 'internalAds' | 'quickHelp' | 'failedToParseJsonResponse' | 'noProductsFound' | 'continueShopping' | 'orderSummary' | 'sendOrder'
   | 'selectCategory' | 'all' | 'priceRange' | 'minPrice' | 'maxPrice' | 'applyFilters' | 'resetFilters' | 'details'
-  | 'manageFAQs' | 'addFAQ' | 'editFAQ' | 'deleteFAQ' | 'question' | 'answer'
-  | 'settingsSuccessfullySaved' | 'itemAddedToCart' | 'itemRemovedFromCart' | 'cartUpdated'
+  | 'manageFAQs' | 'addFAQ' | 'editFAQ' | 'deleteFAQ' | 'question' | 'answer'  | 'settingsSuccessfullySaved' | 'itemAddedToCart' | 'itemRemovedFromCart' | 'cartUpdated'
   | 'chatWithOurAssistant' | 'howCanIHelpYou' | 'search' | 'category'
-  | 'productDetails' | 'close' | 'noAdsAvailable' | 'learnMore';
-
+  | 'productDetails' | 'close' | 'noAdsAvailable' | 'learnMore'
+  | 'productNotFound' | 'goBack' | 'inStock'
+  | 'exploreOurCollection' | 'productsFound' | 'sortBy' | 'name' | 'priceLowToHigh' | 'priceHighToLow' 
+  | 'newest' | 'showing' | 'of' | 'tryDifferentFilters' | 'previous' | 'next'
+  | 'backToStore';
 
 export type Translations = Record<TranslationKeys, string>;
 
