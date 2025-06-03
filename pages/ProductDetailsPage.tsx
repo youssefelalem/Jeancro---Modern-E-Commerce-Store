@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../hooks';
 import { Button, LocalizedText } from '../components';
@@ -37,10 +37,15 @@ export const ProductDetailsPage: React.FC = () => {
   const handleImageClick = () => {
     setIsFullscreen(true);
   };
-
   const closeFullscreen = () => {
     setIsFullscreen(false);
   };
+  
+  // إعادة تعيين موضع التمرير إلى الأعلى عند فتح صفحة التفاصيل
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+  
   return (
     <div className="container mx-auto px-4 py-8">
       {/* شريط التنقل (Breadcrumb) */}
