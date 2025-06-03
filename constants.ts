@@ -3,7 +3,7 @@ import { Product, Category, Ad, FAQ, StoreSettings, LanguageCode, Translations }
 export const DEFAULT_LANGUAGE: LanguageCode = LanguageCode.EN;
 export const SUPPORTED_LANGUAGES: LanguageCode[] = [LanguageCode.EN, LanguageCode.AR];
 export const STORE_NAME = 'Jeancro';
-export const DEFAULT_CURRENCY_SYMBOL = 'mad ';
+export const DEFAULT_CURRENCY_SYMBOL = 'د.م';
 export const WHATSAPP_NUMBER = '+12345678900'; // Replace with actual WhatsApp number
 export const ADMIN_MOCK_PASSWORD = 'admin'; // For demo purposes
 
@@ -22,7 +22,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
       AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
     },
-    price: 50,
+    price: 300,
     imageUrl: '/assets/img/image01.jpg',
     categoryId: 'cat1',
     // يمكنك إضافة حقول جديدة مثل:
