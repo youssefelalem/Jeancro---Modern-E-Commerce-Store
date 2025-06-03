@@ -2,25 +2,26 @@ import { TRANSLATIONS } from '@/constants';
 import type { FAQ, LanguageCode } from '@/types';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Ensure API_KEY is available in the environment variables
-const API_KEY = process.env['API_KEY'];
+// التأكد من توفر مفتاح API في متغيرات البيئة
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   console.error(
-    'Gemini API key not found. Please set the process.env.API_KEY environment variable.'
+    'مفتاح Gemini API غير موجود. يرجى تعيين متغير البيئة VITE_GEMINI_API_KEY.'
   );
-  // Potentially throw an error or handle this case appropriately in a real app
-  // For this example, we'll let it proceed and fail if the API is called without a key.
+  // يمكن رمي خطأ أو التعامل مع هذه الحالة بشكل مناسب في التطبيق الحقيقي
+  // في هذا المثال، سنتركه يتابع وسيفشل إذا تم استدعاء API بدون مفتاح
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY || 'MISSING_API_KEY'); // Provide a fallback for type safety
+const genAI = new GoogleGenerativeAI(API_KEY || 'مفتاح_API_مفقود'); // توفير بديل للأمان
 const modelName = 'gemini-1.5-flash';
 
+// وظيفة للحصول على رد من شات بوت Gemini
 export const getChatbotResponse = async (
-  message: string,
-  chatHistory: { role: 'user' | 'model'; parts: { text: string }[] }[],
-  faqs: FAQ[],
-  currentLanguage: LanguageCode
+  message: string, // رسالة المستخدم
+  chatHistory: { role: 'user' | 'model'; parts: { text: string }[] }[], // تاريخ المحادثة
+  faqs: FAQ[], // الأسئلة الشائعة
+  currentLanguage: LanguageCode // اللغة الحالية
 ): Promise<string> => {
   if (!API_KEY) {
     return (
