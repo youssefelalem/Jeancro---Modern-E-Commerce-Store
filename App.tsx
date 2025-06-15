@@ -10,14 +10,14 @@ import { AppRoutes } from './routes/AppRoutes';
 import { useAppContext } from './hooks';
 import { Navbar, Footer, ChatbotWidget, Toast } from './components';
 import { SUPPORTED_LANGUAGES } from './constants';
+import { getStoreSettings } from './utils/storeSettings';
 
 /**
  * مكون التطبيق الداخلي - يحتوي على العناصر التي تحتاج Context
  */
 const TestAppContent: React.FC = () => {
-  const location = useLocation();
-  const {
-    storeSettings,
+  const location = useLocation();  const {
+    products,
     cartItems,
     currentLanguage,
     setCurrentLanguage,
@@ -33,6 +33,7 @@ const TestAppContent: React.FC = () => {
     faqs,
     toast,
     setToast,
+    addToCart,
   } = useAppContext();
 
   // حساب عدد العناصر في السلة
@@ -40,6 +41,9 @@ const TestAppContent: React.FC = () => {
 
   // التحقق من كون المسار الحالي صفحة إدارة
   const isAdminPage = location.pathname.startsWith('/admin');
+  
+  // الحصول على الإعدادات المحدثة من النظام المركزي
+  const currentStoreSettings = getStoreSettings();
 
   return (
     <div 
@@ -49,7 +53,7 @@ const TestAppContent: React.FC = () => {
       {/* شريط التنقل العلوي - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
       {!isAdminPage && (
         <Navbar
-          storeName={storeSettings.storeName}
+          storeName={currentStoreSettings.storeName}
           cartItemCount={cartItemCount}
           currentLanguage={currentLanguage}
           supportedLanguages={SUPPORTED_LANGUAGES}
@@ -64,20 +68,16 @@ const TestAppContent: React.FC = () => {
       {/* محتوى التطبيق - المسارات والصفحات */}
       <div className="flex-grow">
         <AppRoutes />
-      </div>
-
-      {/* تذييل الصفحة - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
+      </div>      {/* تذييل الصفحة - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
       {!isAdminPage && (
         <Footer
-          storeName={storeSettings.storeName}
+          storeName={currentStoreSettings.storeName}
           translations={translations}
-          settings={storeSettings}
+          settings={currentStoreSettings}
           currentLanguage={currentLanguage}
         />
-      )}
-
-      {/* Chatbot Widget - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
-      {!isAdminPage && (
+      )}      {/* Chatbot Widget - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
+      {!isAdminPage && currentStoreSettings.chatbot.enabled && (
         <ChatbotWidget
           isOpen={isChatbotOpen}
           onToggle={toggleChatbot}
@@ -87,6 +87,14 @@ const TestAppContent: React.FC = () => {
           currentLanguage={currentLanguage}
           translations={translations}
           isLoading={isChatLoading}
+          onAddToCart={(productId) => {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+              addToCart(product);
+            }
+          }}
+          currencySymbol={currentStoreSettings.currencySymbol}
+          storeSettings={currentStoreSettings}
         />
       )}
 

@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../hooks/useAppContext';
+import { useAppContext } from '../hooks';
 import { Product, LanguageCode } from '../types';
 import {
   AdBanner,
@@ -17,6 +17,7 @@ import {
   LocalizedText,
   ProductCard,
 } from '../components';
+import { getStoreSettings } from '../utils/storeSettings';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,10 +28,12 @@ export const HomePage: React.FC = () => {
     addToCart,
     currentLanguage,
     t,
-    storeSettings,
     translations,
     showToast,
   } = useAppContext();
+  
+  // الحصول على الإعدادات المحدثة من النظام المركزي
+  const storeSettings = getStoreSettings();
   
   // حالات الفلترة والبحث
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
@@ -106,7 +109,7 @@ export const HomePage: React.FC = () => {
   
   /**
    * التنقل إلى صفحة تفاصيل المنتج
-   */  /**
+   */ /**
    * التنقل إلى صفحة تفاصيل المنتج
    */
   const handleViewDetails = (product: Product) => {

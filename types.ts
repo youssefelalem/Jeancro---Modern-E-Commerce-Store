@@ -11,6 +11,7 @@ export interface Product {
   imageUrl: string;
   categoryId: string;
   images: string[];
+  inStock: boolean; // خاصية توفر المنتج في المخزون
   details: {
     EN: {
       features: string[];
@@ -64,6 +65,28 @@ export interface StoreSettings {
     facebook?: string;
     instagram?: string;
     twitter?: string;
+  };
+  appearance: {
+    primaryColor: string;
+    accentColor: string;
+    logo?: string;
+    bannerImage?: string;
+    darkMode: boolean;
+  };
+  seo: {
+    metaTitle: Record<LanguageCode, string>;
+    metaDescription: Record<LanguageCode, string>;
+    keywords: Record<LanguageCode, string>;
+  };
+  chatbot: {
+    enabled: boolean;
+    welcomeMessage: Record<LanguageCode, string>;
+    autoShowOnPage: boolean;
+  };
+  shipping: {
+    freeShippingThreshold?: number;
+    shippingCost: number;
+    shippingMethods: string[];
   };
 }
 

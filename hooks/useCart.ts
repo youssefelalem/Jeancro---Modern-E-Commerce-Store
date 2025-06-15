@@ -5,6 +5,7 @@
 
 import { useAppContext } from './useAppContext';
 import { Product } from '../types';
+import { getStoreSettings } from '../utils/storeSettings';
 
 export const useCart = () => {
   const {
@@ -15,8 +16,10 @@ export const useCart = () => {
     clearCart: contextClearCart,
     t,
     showToast,
-    storeSettings,
   } = useAppContext();
+  
+  // الحصول على الإعدادات المحدثة من النظام المركزي
+  const storeSettings = getStoreSettings();
 
   // حساب العدد الإجمالي للعناصر في السلة
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);

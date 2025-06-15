@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../hooks';
 import { Button, LocalizedText } from '../components';
+import { getStoreSettings } from '../utils/storeSettings';
 
 export const ProductDetailsPage: React.FC = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { products, currentLanguage, translations, addToCart, storeSettings, showToast } = useAppContext();
+  const { products, currentLanguage, translations, addToCart, showToast } = useAppContext();
+  
+  // الحصول على الإعدادات المحدثة من النظام المركزي
+  const storeSettings = getStoreSettings();
   
   const product = products.find(p => p.id === id);
   

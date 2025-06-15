@@ -252,7 +252,7 @@ class AnalyticsManager {
     this.trackEvent({
       action: `chatbot_${action}`,
       category: 'engagement',
-      label: messageType,
+      ...(messageType && { label: messageType }),
       custom_parameters: {
         interaction_type: action,
         message_type: messageType

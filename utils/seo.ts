@@ -164,12 +164,11 @@ class SEOManager {
     image?: string;
     category?: string;
     inStock?: boolean;
-  }): void {
-    const seoData: SEOData = {
+  }): void {    const seoData: SEOData = {
       title: `${product.name} - جين كرو`,
       description: product.description,
       keywords: [product.name, product.category || '', 'منتج', 'تسوق'],
-      image: product.image,
+      image: product.image || '',
       type: 'product',
       price: product.price,
       currency: 'USD',

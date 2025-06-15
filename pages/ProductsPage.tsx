@@ -7,6 +7,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../hooks/useAppContext';
 import { Product, LanguageCode } from '../types';
 import { ProductCard, Button, LocalizedText } from '../components';
+import { getStoreSettings } from '../utils/storeSettings';
 
 type SortOption = 'name' | 'price-low' | 'price-high' | 'newest';
 type ViewMode = 'grid' | 'list';
@@ -18,10 +19,12 @@ export const ProductsPage: React.FC = () => {
     addToCart,
     currentLanguage,
     t,
-    storeSettings,
     translations,
     showToast,
   } = useAppContext();
+  
+  // الحصول على الإعدادات المحدثة من النظام المركزي
+  const storeSettings = getStoreSettings();
 
   // حالات الصفحة
   const [searchTerm, setSearchTerm] = useState('');

@@ -5,6 +5,7 @@
 
 import { createContext, useContext } from 'react';
 import { Product, Category, Ad, CartItem, StoreSettings, FAQ, LanguageCode } from '../types';
+import { INITIAL_STORE_SETTINGS } from '../constants';
 
 // أنواع الأحداث (Actions)
 export type AppAction =
@@ -74,29 +75,12 @@ export interface AppState {
 }
 
 // الحالة الأولية
-export const initialAppState: AppState = {
-  products: [],
+export const initialAppState: AppState = {  products: [],
   categories: [],
   ads: [],
   faqs: [],
-  storeSettings: {
-    storeName: 'جينكرو',
-    description: 'متجر إلكتروني حديث',
-    logo: '',
-    primaryColor: '#3B82F6',
-    secondaryColor: '#1E40AF',
-    currency: 'USD',
-    contactEmail: 'info@jeancro.com',
-    contactPhone: '+1234567890',
-    address: '123 شارع التجارة',
-    socialLinks: {
-      facebook: '',
-      twitter: '',
-      instagram: '',
-      linkedin: ''
-    }
-  },
-  currentLanguage: 'AR',
+  storeSettings: INITIAL_STORE_SETTINGS,
+  currentLanguage: LanguageCode.AR,
   cartItems: [],
   isCartOpen: false,
   isAdminLoggedIn: false,
@@ -142,12 +126,11 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
         )
       };
       
-    case 'DELETE_PRODUCT':
-      return {
+    case 'DELETE_PRODUCT':      return {
         ...state,
         products: state.products.filter(product => product.id !== action.payload),
         // إزالة المنتج من السلة أيضاً
-        cartItems: state.cartItems.filter(item => item.product.id !== action.payload)
+        cartItems: state.cartItems.filter(item => item.id !== action.payload)
       };
 
     // إدارة الفئات
@@ -208,12 +191,10 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
       return {
         ...state,
         ads: state.ads.filter(ad => ad.id !== action.payload)
-      };
-
-    // إدارة السلة
+      };    // إدارة السلة
     case 'ADD_TO_CART':
       const existingItemIndex = state.cartItems.findIndex(
-        item => item.product.id === action.payload.product.id
+        item => item.id === action.payload.product.id
       );
       
       if (existingItemIndex > -1) {
@@ -232,23 +213,22 @@ export const appReducer = (state: AppState, action: AppAction): AppState => {
         cartItems: [
           ...state.cartItems,
           {
-            product: action.payload.product,
+            ...action.payload.product,
             quantity: action.payload.quantity
           }
         ]
       };
-      
-    case 'REMOVE_FROM_CART':
+        case 'REMOVE_FROM_CART':
       return {
         ...state,
-        cartItems: state.cartItems.filter(item => item.product.id !== action.payload)
+        cartItems: state.cartItems.filter(item => item.id !== action.payload)
       };
       
     case 'UPDATE_CART_QUANTITY':
       return {
         ...state,
         cartItems: state.cartItems.map(item =>
-          item.product.id === action.payload.productId
+          item.id === action.payload.productId
             ? { ...item, quantity: action.payload.quantity }
             : item
         ).filter(item => item.quantity > 0) // إزالة العناصر ذات الكمية 0
@@ -369,11 +349,10 @@ export const useCart = () => {
   const state = useAppState();
   const dispatch = useAppDispatch();
 
-  return {
-    cartItems: state.cartItems,
+  return {    cartItems: state.cartItems,
     isCartOpen: state.isCartOpen,
     itemCount: state.cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    totalPrice: state.cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0),
+    totalPrice: state.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
     addToCart: (product: Product, quantity = 1) => 
       dispatch({ type: 'ADD_TO_CART', payload: { product, quantity } }),
     removeFromCart: (productId: string) => 

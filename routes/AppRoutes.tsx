@@ -6,6 +6,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppContext } from '../hooks';
+import { getStoreSettings } from '../utils/storeSettings';
 
 // صفحات المستخدم
 import { HomePage, ProductDetailsPage } from '../pages';
@@ -41,14 +42,17 @@ export const AppRoutes: React.FC = () => {
 
   // وظيفة الدفع عبر واتساب
   const handleCheckout = () => {
+    // الحصول على الإعدادات الحالية من النظام المركزي
+    const currentSettings = getStoreSettings();
+    
     const orderText = cartItems
-      .map(item => `${item.name[currentLanguage]} x${item.quantity} - ${storeSettings.currencySymbol}${(item.price * item.quantity).toFixed(2)}`)
+      .map(item => `${item.name[currentLanguage]} x${item.quantity} - ${currentSettings.currencySymbol}${(item.price * item.quantity).toFixed(2)}`)
       .join('\n');
     
     const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const message = `${translations.checkoutViaWhatsApp}\n\n${orderText}\n\n${translations.total}: ${storeSettings.currencySymbol}${total.toFixed(2)}`;
+    const message = `${translations.checkoutViaWhatsApp}\n\n${orderText}\n\n${translations.total}: ${currentSettings.currencySymbol}${total.toFixed(2)}`;
     
-    const whatsappUrl = `https://wa.me/${storeSettings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${currentSettings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     clearCart();
     setIsCartOpen(false);

@@ -21,10 +21,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: {
       EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
       AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
-    },
-    price: 300,
+    },    price: 1500,
     imageUrl: '/assets/img/image01.jpg',
     categoryId: 'cat1',
+    inStock: true,
     // يمكنك إضافة حقول جديدة مثل:
     images: ['/assets/img/image01.jpg','/assets/img/image05.jpg', '/assets/img/image06.jpg'],
     details: {
@@ -45,159 +45,10 @@ export const INITIAL_PRODUCTS: Product[] = [
         }
       }
     }
-  },  {
-    id: 'prod2',
-    name: { EN: 'Slim Fit Jeans', AR: 'جينز بقصة ضيقة' },
-    description: { EN: 'Modern slim fit jeans for a stylish look.', AR: 'جينز عصري بقصة ضيقة لإطلالة أنيقة.' },
-    price: 60,
-    imageUrl: 'https://picsum.photos/seed/prod2/400/300',
-    categoryId: 'cat1',
-    images: ['https://picsum.photos/seed/prod2/400/300', 'https://picsum.photos/seed/prod2b/400/300'],
-    details: {
-      EN: {
-        features: ['Slim Fit', 'Cotton Blend', 'Modern Design'],
-        specifications: {
-          'Material': 'Cotton & Elastane',
-          'Size': 'M',
-          'Color': 'Blue'
-        }
-      },
-      AR: {
-        features: ['قصة ضيقة', 'مزيج قطني', 'تصميم عصري'],
-        specifications: {
-          'الخامة': 'قطن وإيلاستين',
-          'المقاس': 'M',
-          'اللون': 'أزرق'
-        }
-      }
-    }
-  },  {
-    id: 'prod3',
-    name: { EN: 'Summer Dress', AR: 'فستان صيفي' },
-    description: { EN: 'Light and airy summer dress.', AR: 'فستان صيفي خفيف ومتجدد الهواء.' },
-    price: 45,
-    imageUrl: 'https://picsum.photos/seed/prod3/400/300',
-    categoryId: 'cat2',
-    images: ['https://picsum.photos/seed/prod3/400/300', 'https://picsum.photos/seed/prod3b/400/300'],
-    details: {
-      EN: {
-        features: ['Lightweight', 'Cotton Fabric', 'Summer Design'],
-        specifications: {
-          'Material': 'Cotton',
-          'Size': 'M',
-          'Color': 'White'
-        }
-      },
-      AR: {
-        features: ['خفيف الوزن', 'قماش قطني', 'تصميم صيفي'],
-        specifications: {
-          'الخامة': 'قطن',
-          'المقاس': 'M',
-          'اللون': 'أبيض'
-        }
-      }
-    }
-  },  {
-    id: 'prod4',
-    name: { EN: 'Leather Belt', AR: 'حزام جلدي' },
-    description: { EN: 'Genuine leather belt with a classic buckle.', AR: 'حزام من الجلد الطبيعي بإبزيم كلاسيكي.' },
-    price: 30,
-    imageUrl: 'https://picsum.photos/seed/prod4/400/300',
-    categoryId: 'cat4',
-    images: ['https://picsum.photos/seed/prod4/400/300', 'https://picsum.photos/seed/prod4b/400/300'],
-    details: {
-      EN: {
-        features: ['Genuine Leather', 'Classic Design', 'Durable'],
-        specifications: {
-          'Material': 'Leather',
-          'Size': 'M',
-          'Color': 'Brown'
-        }
-      },
-      AR: {
-        features: ['جلد طبيعي', 'تصميم كلاسيكي', 'متين'],
-        specifications: {
-          'الخامة': 'جلد',
-          'المقاس': 'M',
-          'اللون': 'بني'
-        }
-      }
-    }
-  },  {
-    id: 'prod5',
-    name: { EN: 'Kids Hoodie', AR: 'هودي أطفال' },
-    description: { EN: 'Warm and cozy hoodie for kids.', AR: 'هودي دافئ ومريح للأطفال.' },
-    price: 35,
-    imageUrl: 'https://picsum.photos/seed/prod5/400/300',
-    categoryId: 'cat3',
-    images: ['https://picsum.photos/seed/prod5/400/300', 'https://picsum.photos/seed/prod5b/400/300'],
-    details: {
-      EN: {
-        features: ['Warm Material', 'Kid Friendly', 'Easy Care'],
-        specifications: {
-          'Material': 'Cotton Blend',
-          'Size': 'Kids L',
-          'Color': 'Gray'
-        }
-      },
-      AR: {
-        features: ['خامة دافئة', 'مناسب للأطفال', 'سهل العناية'],
-        specifications: {
-          'الخامة': 'مزيج قطني',
-          'المقاس': 'L أطفال',
-          'اللون': 'رمادي'
-        }
-      }
-    }
-  },  {
-    id: 'prod6',
-    name: { EN: 'Elegant Blouse', AR: 'بلوزة أنيقة' },
-    description: { EN: 'Chic blouse for formal or casual occasions.', AR: 'بلوزة أنيقة للمناسبات الرسمية أو غير الرسمية.' },
-    price: 50,
-    imageUrl: 'https://picsum.photos/seed/prod6/400/300',
-    categoryId: 'cat2',
-    images: ['https://picsum.photos/seed/prod6/400/300', 'https://picsum.photos/seed/prod6b/400/300'],
-    details: {
-      EN: {
-        features: ['Elegant Design', 'Versatile Style', 'Premium Fabric'],
-        specifications: {
-          'Material': 'Silk Blend',
-          'Size': 'M',
-          'Color': 'White'
-        }
-      },
-      AR: {
-        features: ['تصميم أنيق', 'ستايل متعدد الاستخدامات', 'قماش فاخر'],
-        specifications: {
-          'الخامة': 'مزيج حرير',
-          'المقاس': 'M',
-          'اللون': 'أبيض'
-        }
-      }
-    }
-  },
+  }
 ];
 
-export const INITIAL_ADS: Ad[] = [
-  {
-    id: 'ad1',
-    imageUrl: 'https://picsum.photos/seed/ad1/800/200',
-    linkUrl: '#',
-    title: { EN: 'Summer Collection Out Now!', AR: 'تشكيلة الصيف متوفرة الآن!' },
-    description: { EN: 'Discover the latest trends for this summer.', AR: 'اكتشف أحدث الصيحات لهذا الصيف.' },
-    placement: 'homepage-banner',
-    isActive: true,
-  },
-  {
-    id: 'ad2',
-    imageUrl: 'https://picsum.photos/seed/ad2/300/250',
-    linkUrl: '#',
-    title: { EN: 'Special Discount on Accessories', AR: 'خصم خاص على الإكسسوارات' },
-    description: { EN: 'Get 20% off on all accessories.', AR: 'احصل على خصم 20% على جميع الإكسسوارات.' },
-    placement: 'sidebar',
-    isActive: true,
-  },
-];
+export const INITIAL_ADS: Ad[] = [];
 
 export const INITIAL_FAQS: FAQ[] = [
   {
@@ -227,6 +78,40 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
     instagram: 'https://instagram.com/jeancro',
     twitter: 'https://twitter.com/jeancro',
   },
+  appearance: {
+    primaryColor: '#4F46E5', // اللون الأساسي (Indigo)
+    accentColor: '#EC4899', // لون الإبراز (Pink)
+    logo: '/assets/img/logo.png',
+    bannerImage: '/assets/img/banner.jpg',
+    darkMode: false,
+  },
+  seo: {
+    metaTitle: {
+      EN: 'Jeancro - Modern E-Commerce Store',
+      AR: 'جينكرو - متجر إلكتروني حديث'
+    },
+    metaDescription: {
+      EN: 'Discover our collection of modern clothing and accessories.',
+      AR: 'اكتشف مجموعتنا من الملابس والإكسسوارات الحديثة.'
+    },
+    keywords: {
+      EN: 'clothing, fashion, online shopping, accessories, modern',
+      AR: 'ملابس، أزياء، تسوق إلكتروني، إكسسوارات، حديث'
+    }
+  },
+  chatbot: {
+    enabled: true,
+    welcomeMessage: {
+      EN: 'Welcome to Jeancro! How can I help you today?',
+      AR: 'مرحباً بك في جينكرو! كيف يمكنني مساعدتك اليوم؟'
+    },
+    autoShowOnPage: false
+  },
+  shipping: {
+    freeShippingThreshold: 500,
+    shippingCost: 50,
+    shippingMethods: ['Standard Shipping', 'Express Shipping']
+  }
 };
 
 export const TRANSLATIONS: Record<LanguageCode, Translations> = {

@@ -338,9 +338,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     const showTimer = setTimeout(() => setIsVisible(true), 10);
 
     // شريط التقدم
-    if (notification.progress && notification.duration && !notification.persistent) {
-      const interval = setInterval(() => {
-        setProgress(prev => {
+    if (notification.progress && notification.duration && !notification.persistent) {      const interval = setInterval(() => {
+        setProgress(() => {
           const elapsed = Date.now() - notification.createdAt;
           const remaining = Math.max(0, 100 - (elapsed / notification.duration!) * 100);
           return remaining;

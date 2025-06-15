@@ -278,16 +278,15 @@ export const validateProductForm = (productData: {
   
   // التحقق المخصص لرابط الصورة
   const imageValidation = validateImageURL(productData.imageURL);
-
   // دمج النتائج
   const errors = { ...formValidation.errors };
   
   if (!priceValidation.isValid) {
-    errors.price = priceValidation.errors;
+    errors['price'] = priceValidation.errors;
   }
   
   if (!imageValidation.isValid) {
-    errors.imageURL = imageValidation.errors;
+    errors['imageURL'] = imageValidation.errors;
   }
 
   return {

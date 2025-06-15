@@ -879,6 +879,9 @@ interface ChatbotWidgetProps {
   currentLanguage: LanguageCode;
   translations: Translations;
   isLoading: boolean;
+  onAddToCart: (productId: string) => void;
+  currencySymbol: string;
+  storeSettings?: StoreSettings;
 }
 
 export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
@@ -890,9 +893,13 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   currentLanguage,
   translations,
   isLoading,
+  onAddToCart,
+  currencySymbol,
+  storeSettings,
 }) => {
   const [inputMessage, setInputMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [autoOpened, setAutoOpened] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -900,16 +907,30 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 
   useEffect(scrollToBottom, [messages]);
 
+  // فتح الشات بوت تلقائياً إذا كان مفعلاً في الإعدادات
+  useEffect(() => {
+    if (storeSettings?.chatbot?.autoShowOnPage && !isOpen && !autoOpened) {
+      // تأخير قليل لفتح الشات بوت بعد تحميل الصفحة
+      const timer = setTimeout(() => {
+        onToggle();
+        setAutoOpened(true);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+    return undefined; // إضافة return value لحل مشكلة useEffect
+  }, [storeSettings, isOpen, autoOpened, onToggle]);
+
   const handleSend = async () => {
     if (inputMessage.trim()) {
       await onSendMessage(inputMessage.trim());
       setInputMessage('');
     }
   };
-
+  
   const handleFaqClick = async (question: string) => {
-    // Simulate user sending the FAQ question
-    // This will display the question as if user typed it, then bot will respond.
+    // محاكاة إرسال المستخدم لسؤال FAQ
+    // سيعرض السؤال كما لو كان المستخدم قد كتبه، ثم يرد الروبوت.
     await onSendMessage(question);
   };
 
@@ -939,18 +960,20 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             >
               <XMarkIcon className='h-6 w-6' />
             </button>
-          </div>
-
-          <div className='flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50'>
+          </div>          <div className='flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50'>
             {messages.map(msg => (
               <ChatMessageBubble
                 key={msg.id}
                 message={msg}
                 currentLanguage={currentLanguage}
+                onAddToCart={onAddToCart}
+                currencySymbol={currencySymbol}
+                translations={translations}
               />
             ))}
             {isLoading && (
               <ChatMessageBubble
+                key="loading"
                 message={{
                   id: 'loading',
                   text: translations.chatbotLoading,
@@ -963,13 +986,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             <div ref={messagesEndRef} />
           </div>
 
-          {messages.length === 0 && !isLoading && (
-            <div className='p-4 border-t'>
-              <p className='text-sm text-gray-600 mb-2'>
-                {translations.chatbotWelcome}
+          {messages.length === 0 && !isLoading && (            <div className='p-4 border-t'>              <p className='text-sm text-gray-600 mb-2'>
+                {storeSettings?.chatbot?.welcomeMessage?.[currentLanguage] || translations.chatbotWelcome}
               </p>
               <div className='space-y-1'>
-                {faqs.slice(0, 3).map(faq => (
+                {faqs.slice(0, 2).map(faq => (
                   <Button
                     key={faq.id}
                     variant='outline'
@@ -988,6 +1009,38 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                     />
                   </Button>
                 ))}
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='w-full text-sm bg-indigo-50'
+                  onClick={() =>
+                    handleFaqClick(
+                      currentLanguage === LanguageCode.AR
+                        ? 'أظهر لي المنتجات المتاحة'
+                        : 'Show me available products'
+                    )
+                  }
+                >
+                  {currentLanguage === LanguageCode.AR
+                    ? 'أظهر لي المنتجات المتاحة'
+                    : 'Show me available products'}
+                </Button>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='w-full text-sm bg-indigo-50'
+                  onClick={() =>
+                    handleFaqClick(
+                      currentLanguage === LanguageCode.AR
+                        ? 'كيف يمكنني شراء منتج؟'
+                        : 'How can I purchase a product?'
+                    )
+                  }
+                >
+                  {currentLanguage === LanguageCode.AR
+                    ? 'كيف يمكنني شراء منتج؟'
+                    : 'How can I purchase a product?'}
+                </Button>
               </div>
             </div>
           )}
@@ -1024,15 +1077,64 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 interface ChatMessageBubbleProps {
   message: ChatMessage;
   currentLanguage: LanguageCode;
+  onAddToCart?: (productId: string) => void;
+  currencySymbol?: string;
+  translations?: Translations;
 }
 
 const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
   message,
   currentLanguage,
+  onAddToCart,
+  currencySymbol = 'د.م', // يُستخدم في الرسائل المُنسقة من الشات بوت
+  translations,
 }) => {
   const isUser = message.sender === 'user';
   const isBot = message.sender === 'bot';
   const isSystem = message.sender === 'system';
+  
+  // تحويل النص إلى HTML مع دعم تنسيق Markdown البسيط
+  const formatMessageText = (text: string) => {
+    // استخراج صور المنتجات
+    const productImageRegex = /\[PRODUCT_IMAGE:(.*?)\]/g;
+    let formattedText = text.replace(productImageRegex, (_match, imageUrl) => {
+      return `<div class="product-image"><img src="${imageUrl}" alt="Product" class="rounded-md w-full max-h-48 object-cover my-2" /></div>`;
+    });
+    
+    // استخراج أزرار إضافة إلى السلة
+    const addToCartRegex = /\[ADD_TO_CART:(.*?)\]/g;
+    formattedText = formattedText.replace(addToCartRegex, (_match, productId) => {
+      const addToCartText = translations?.addToCart || (currentLanguage === 'AR' ? 'أضف إلى السلة' : 'Add to Cart');
+      return `<button class="add-to-cart-btn bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors mt-2 w-full" data-product-id="${productId}">${addToCartText}</button>`;
+    });
+    
+    // استبدال رمز العملة في النص إذا احتوى على أسعار
+    if (currencySymbol && text.includes('Price:') || text.includes('السعر:')) {
+      formattedText = formattedText.replace(/\$[\d.,]+/g, (priceMatch) => {
+        const price = priceMatch.replace('$', '');
+        return `${currencySymbol}${price}`;
+      });
+    }
+    
+    // تحويل **نص** إلى نص غامق
+    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // تحويل السطور الجديدة إلى عناصر <br>
+    formattedText = formattedText.replace(/\n/g, '<br>');
+    
+    return formattedText;
+  };
+
+  // معالجة النقر على زر إضافة إلى السلة
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('add-to-cart-btn') && onAddToCart) {
+      const productId = target.getAttribute('data-product-id');
+      if (productId) {
+        onAddToCart(productId);
+      }
+    }
+  };
 
   return (
     <div
@@ -1046,8 +1148,12 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
               ? 'bg-gray-200 text-gray-800'
               : 'bg-yellow-100 text-yellow-800 text-xs italic'
         } ${isUser ? (currentLanguage === LanguageCode.AR ? 'rounded-r-none' : 'rounded-l-none') : currentLanguage === LanguageCode.AR ? 'rounded-l-none' : 'rounded-r-none'}`}
+        onClick={handleClick}
       >
-        <p className='text-sm whitespace-pre-wrap'>{message.text}</p>
+        <div 
+          className='text-sm whitespace-pre-wrap'
+          dangerouslySetInnerHTML={{ __html: formatMessageText(message.text) }}
+        />
         {!isSystem && (
           <p
             className={`text-xs mt-1 ${isUser ? 'text-indigo-200' : 'text-gray-500'} ${isUser ? 'text-right' : 'text-left'}`}
@@ -1211,6 +1317,8 @@ interface InputFieldProps {
   onLocalizedChange?: (lang: LanguageCode, value: string) => void;
   localizedValue?: Record<LanguageCode, string>;
   placeholder?: string;
+  multiline?: boolean;
+  helperText?: string;
 }
 
 export const InputField: React.FC<InputFieldProps> = ({
@@ -1229,9 +1337,14 @@ export const InputField: React.FC<InputFieldProps> = ({
   onLocalizedChange,
   localizedValue,
   placeholder,
+  multiline,
+  helperText,
 }) => {
   const commonClasses =
     'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm';
+
+  // استخدام multiline بدلاً من isTextArea كخاصية جديدة
+  const useTextArea = isTextArea || multiline;
 
   if (isCheckbox) {
     return (
@@ -1253,14 +1366,13 @@ export const InputField: React.FC<InputFieldProps> = ({
 
   if (localizedValue && onLocalizedChange && lang) {
     return (
-      <div>
-        <label
+      <div>        <label
           htmlFor={`${id}-${lang}`}
           className='block text-sm font-medium text-gray-700'
         >
           {label} ({lang.toUpperCase()})
         </label>
-        {isTextArea ? (
+        {useTextArea ? (
           <textarea
             id={`${id}-${lang}`}
             name={`${name}-${lang}`}
@@ -1283,16 +1395,18 @@ export const InputField: React.FC<InputFieldProps> = ({
             placeholder={placeholder}
           />
         )}
+        {helperText && (
+          <p className="mt-1 text-sm text-gray-600">{helperText}</p>
+        )}
       </div>
     );
   }
-
   return (
     <div>
       <label htmlFor={id} className='block text-sm font-medium text-gray-700'>
         {label}
       </label>
-      {isTextArea ? (
+      {useTextArea ? (
         <textarea
           id={id}
           name={name}
@@ -1329,6 +1443,9 @@ export const InputField: React.FC<InputFieldProps> = ({
           required={required}
           placeholder={placeholder}
         />
+      )}
+      {helperText && (
+        <p className="mt-1 text-sm text-gray-600">{helperText}</p>
       )}
     </div>
   );

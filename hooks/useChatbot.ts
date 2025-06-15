@@ -7,6 +7,7 @@ import { useAppContext } from './useAppContext';
 
 export const useChatbot = () => {
   const {
+    products,
     isChatbotOpen,
     toggleChatbot: contextToggleChatbot,
     chatMessages,
@@ -15,6 +16,8 @@ export const useChatbot = () => {
     faqs,
     currentLanguage,
     translations,
+    storeSettings,
+    addToCart,
   } = useAppContext();
 
   // فتح Chatbot
@@ -35,12 +38,21 @@ export const useChatbot = () => {
   const toggleChatbot = () => {
     contextToggleChatbot();
   };
-
   // إرسال رسالة
   const sendMessage = async (message: string) => {
     if (message.trim()) {
       await contextSendChatMessage(message.trim());
     }
+  };
+
+  // إضافة منتج إلى السلة من الشات بوت
+  const addProductToCart = (productId: string) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      addToCart(product);
+      return true;
+    }
+    return false;
   };
 
   // الحصول على آخر رسالة
@@ -58,7 +70,6 @@ export const useChatbot = () => {
     question: faq.question[currentLanguage] || faq.question.EN,
     answer: faq.answer[currentLanguage] || faq.answer.EN,
   }));
-
   return {
     isChatbotOpen,
     chatMessages,
@@ -71,7 +82,10 @@ export const useChatbot = () => {
     closeChatbot,
     toggleChatbot,
     sendMessage,
+    addProductToCart,
+    products,
     translations,
     currentLanguage,
+    currencySymbol: storeSettings.currencySymbol
   };
 };

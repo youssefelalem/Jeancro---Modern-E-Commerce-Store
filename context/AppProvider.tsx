@@ -20,7 +20,6 @@ import {
   INITIAL_PRODUCTS, 
   INITIAL_CATEGORIES, 
   INITIAL_ADS, 
-  INITIAL_STORE_SETTINGS, 
   INITIAL_FAQS, 
   SUPPORTED_LANGUAGES, 
   TRANSLATIONS, 
@@ -29,6 +28,7 @@ import {
 import { getChatbotResponse } from '../geminiService';
 import { generateId } from '../utils/generateId';
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/localStorage';
+import { getStoreSettings, saveStoreSettings } from '../utils/storeSettings';
 
 /**
  * مزود Context الرئيسي للتطبيق
@@ -47,13 +47,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => 
     loadFromLocalStorage('jeancro-cart', [])
   );
+  
+  // الحصول على إعدادات المتجر المركزية
+  const [storeSettings, setStoreSettingsState] = useState<StoreSettings>(() => getStoreSettings());
+  
+  // تعيين اللغة الحالية بناءً على إعدادات المتجر
   const [currentLanguage, setCurrentLanguageState] = useState<LanguageCode>(() => {
-    const savedLang = loadFromLocalStorage('jeancro-language', INITIAL_STORE_SETTINGS.defaultLanguage);
-    return SUPPORTED_LANGUAGES.includes(savedLang) ? savedLang : INITIAL_STORE_SETTINGS.defaultLanguage;
+    const savedLang = loadFromLocalStorage('jeancro-language', storeSettings.defaultLanguage);
+    return SUPPORTED_LANGUAGES.includes(savedLang) ? savedLang : storeSettings.defaultLanguage;
   });
-  const [storeSettings, setStoreSettings] = useState<StoreSettings>(() => 
-    loadFromLocalStorage('jeancro-settings', INITIAL_STORE_SETTINGS)
-  );
+  
   const [faqs, setFaqs] = useState<FAQ[]>(() => 
     loadFromLocalStorage('jeancro-faqs', INITIAL_FAQS)
   );
@@ -95,10 +98,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     document.documentElement.lang = currentLanguage.toLowerCase();
     document.documentElement.dir = currentLanguage === LanguageCode.AR ? 'rtl' : 'ltr';
   }, [currentLanguage]);
-
-  useEffect(() => {
-    saveToLocalStorage('jeancro-settings', storeSettings);
-  }, [storeSettings]);
 
   useEffect(() => {
     saveToLocalStorage('jeancro-faqs', faqs);
@@ -182,16 +181,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         role: msg.sender === 'user' ? ('user' as const) : ('model' as const),
         parts: [{ text: msg.text }],
       }))
-      .filter(msg => msg.role === 'user' || msg.role === 'model');
-
-    try {
+      .filter(msg => msg.role === 'user' || msg.role === 'model');    try {
       const botResponseText = await getChatbotResponse(
         messageText,
         historyForGemini,
         faqs,
-        currentLanguage
+        currentLanguage,
+        products
       );
-      
       const botMessage: ChatMessage = {
         id: generateId(),
         text: botResponseText,
@@ -224,6 +221,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const logoutAdmin = () => {
     setIsAdminLoggedIn(false);
+  };
+  
+  // وظيفة لتحديث إعدادات المتجر المركزية
+  const setStoreSettings = (settings: StoreSettings | ((prevSettings: StoreSettings) => StoreSettings)) => {
+    if (typeof settings === 'function') {
+      const updatedSettings = settings(storeSettings);
+      saveStoreSettings(updatedSettings);
+      setStoreSettingsState(updatedSettings);
+    } else {
+      saveStoreSettings(settings);
+      setStoreSettingsState(settings);
+    }
   };
 
   // مزامنة البيانات مع الثوابت

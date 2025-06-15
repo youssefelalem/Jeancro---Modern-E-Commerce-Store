@@ -85,15 +85,14 @@ export const AdminProductsPage: React.FC = () => {
     if (!formData.name?.EN || !formData.name?.AR || !formData.description?.EN || !formData.description?.AR) {
       showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
       return;
-    }
-
-    const newProduct: Product = {
+    }    const newProduct: Product = {
       id: editingProduct?.id || `prod_${Date.now()}`,
       name: formData.name!,
       description: formData.description!,
       price: formData.price || 0,
       imageUrl: formData.imageUrl || '',
       categoryId: formData.categoryId || '',
+      inStock: true, // المنتجات الجديدة متوفرة افتراضياً
       images: formData.images || [''],
       details: formData.details || {
         EN: { features: [], specifications: {} },
