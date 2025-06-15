@@ -16,36 +16,82 @@ export const INITIAL_CATEGORIES: Category[] = [
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
-    id: 'prod1',
-    name: { EN: 'Crochet Jacket', AR: 'جاكيت كروشيه' },
-    description: {
-      EN: 'Handmade crochet jacket with vintage square patterns in cream and brown tones. Perfect for stylish, cozy outfits.',
-      AR: 'جاكيت كروشيه يدوي بنقوش مربعة كلاسيكية بألوان الكريمي والبني. مثالي لإطلالة أنيقة ودافئة.'
-    },    price: 1500,
-    imageUrl: '/assets/img/image01.jpg',
-    categoryId: 'cat1',
-    inStock: true,
-    // يمكنك إضافة حقول جديدة مثل:
-    images: ['/assets/img/image01.jpg','/assets/img/image05.jpg', '/assets/img/image06.jpg'],
-    details: {
-      EN: {
-        features: ['100% Cotton', 'Handmade', 'Vintage Design'],
-        specifications: {
-          'Material': 'Cotton',
-          'Size': 'L',
-          'Color': 'Cream & Brown'
-        }
-      },
-      AR: {
-        features: ['قطن 100%', 'صناعة يدوية', 'تصميم كلاسيكي'],
-        specifications: {
-          'الخامة': 'قطن',
-          'المقاس': 'L',
-          'اللون': 'كريمي وبني'
-        }
+  id: 'prod1',
+  name: { 
+    EN: 'Versatile Vogue Jacket', 
+    AR: 'جاكيت الأناقة المتجددة' 
+  },
+  description: {
+    EN: 'Reversible handmade jacket with one side in cozy crochet featuring vintage square patterns, and the other in stylish white denim. Two looks in one — perfect for versatile, trendy outfits.',
+    AR: 'جاكيت يدوي بوجهين: وجه من الكروشيه بنقوش مربعة كلاسيكية ووجه آخر من الجينز الأبيض الأنيق. إطلالتان في قطعة واحدة، مثالية لمظهر أنيق ومتعدد الاستخدامات.'
+  },
+  price: 1500,
+  imageUrl: '/assets/img/image01.jpg',
+  categoryId: 'cat1',
+  inStock: true,
+  images: [
+    '/assets/img/image01.jpg',
+    '/assets/img/image02.jpg',
+    '/assets/img/image03.jpg'
+  ],
+  details: {
+    EN: {
+      features: ['Reversible', 'Handmade', 'Vintage Crochet & White Denim'],
+      specifications: {
+        'Material': 'Cotton Crochet & White Denim',
+        'Size': 'L',
+        'Color': 'Cream, Brown & White'
+      }
+    },
+    AR: {
+      features: ['بوجهين', 'صناعة يدوية', 'كروشيه كلاسيكي وجينز أبيض'],
+      specifications: {
+        'الخامة': 'كروشيه قطني وجينز أبيض',
+        'المقاس': 'L',
+        'الألوان': 'كريمي، بني، وأبيض'
       }
     }
   }
+},
+{
+  "id": "prod2",
+  "name": { 
+    "EN": "Crochet Bomber Jacket", 
+    "AR": "جاكيت بومبر كروشيه" 
+  },
+  "description": {
+    "EN": "A vibrant, handmade bomber-style jacket crafted from crochet. It features a stunning large granny square design on the back, with smaller matching squares on the front and sleeves. The bold red, white, and black color combination makes it a unique statement piece that's both cozy and stylish.",
+    "AR": "جاكيت بومبر حيوي مصنوع يدوياً من الكروشيه. يتميز بتصميم مذهل من مربع جدة كبير على الظهر، مع مربعات متطابقة أصغر على الأمام والأكمام. مزيج الألوان الجريء من الأحمر والأبيض والأسود يجعله قطعة فريدة تعبر عن الأناقة والدفء في آن واحد."
+  },
+  "price": 1850,
+  "imageUrl": "/assets/img/image05.jpg",
+  "categoryId": "cat2",
+  "inStock": true,
+  "images": [
+    "/assets/img/image04.jpg",
+    "/assets/img/image05.jpg",
+    "/assets/img/image06.jpg",
+    "/assets/img/image07.jpg"
+  ],
+  "details": {
+    "EN": {
+      "features": ["100% Handmade", "Unique Granny Square Pattern", "Bomber Style Fit"],
+      "specifications": {
+        "Material": "Thick Cotton Yarn",
+        "Size": "L / Oversized",
+        "Color": "Red, White, Black"
+      }
+    },
+    "AR": {
+      "features": ["صناعة يدوية 100%", "نقشة مربعات الجدة الفريدة", "قصة بومبر عصرية"],
+      "specifications": {
+        "الخامة": "خيوط قطن سميكة",
+        "المقاس": "لارج / قصة واسعة",
+        "الألوان": "أحمر، أبيض، أسود"
+      }
+    }
+  }
+}
 ];
 
 export const INITIAL_ADS: Ad[] = [];
