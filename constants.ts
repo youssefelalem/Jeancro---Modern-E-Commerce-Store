@@ -12,6 +12,7 @@ export const INITIAL_CATEGORIES: Category[] = [
   { id: 'cat2', name: { EN: 'Women', AR: 'نساء' } },
   { id: 'cat3', name: { EN: 'Kids', AR: 'أطفال' } },
   { id: 'cat4', name: { EN: 'Accessories', AR: 'إكسسوارات' } },
+  { id: 'cat5', name: { EN: 'Mixed', AR: 'مزيج' } }
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -27,7 +28,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   price: 1500,
   imageUrl: '/assets/img/image01.jpg',
-  categoryId: 'cat1',
+  categoryId: 'cat5',
   inStock: true,
   images: [
     '/assets/img/image01.jpg',
@@ -65,7 +66,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   "price": 1850,
   "imageUrl": "/assets/img/image05.jpg",
-  "categoryId": "cat2",
+  "categoryId": "cat5",
   "inStock": true,
   "images": [
     "/assets/img/image04.jpg",
@@ -289,10 +290,12 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     newest: 'Newest',
     showing: 'Showing',
     of: 'of',
-    tryDifferentFilters: 'Try different filters',
-    previous: 'Previous',
+    tryDifferentFilters: 'Try different filters',    previous: 'Previous',
     next: 'Next',
     backToStore: 'Back to Store',
+    newConversation: 'New Conversation',
+    chatCleared: 'Chat cleared. Starting a new conversation!',
+    chatWelcomeNew: 'Hello! I\'m your assistant at Jeancro. How can I help you today?',
   },
   [LanguageCode.AR]: {
     appName: 'جينكرو',
@@ -421,9 +424,11 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
     newest: 'الأحدث',
     showing: 'عرض',
     of: 'من',
-    tryDifferentFilters: 'جرب فلاتر مختلفة',
-    previous: 'السابق',
+    tryDifferentFilters: 'جرب فلاتر مختلفة',    previous: 'السابق',
     next: 'التالي',
     backToStore: 'العودة للمتجر',
+    newConversation: 'محادثة جديدة',
+    chatCleared: 'تم مسح المحادثة. بدء محادثة جديدة!',
+    chatWelcomeNew: 'مرحباً! أنا مساعدك في جينكرو. كيف يمكنني مساعدتك اليوم؟',
   },
 };

@@ -5,13 +5,13 @@
 
 import { useAppContext } from './useAppContext';
 
-export const useChatbot = () => {
-  const {
+export const useChatbot = () => {  const {
     products,
     isChatbotOpen,
     toggleChatbot: contextToggleChatbot,
     chatMessages,
     sendChatMessage: contextSendChatMessage,
+    clearChatMessages: contextClearChatMessages,
     isChatLoading,
     faqs,
     currentLanguage,
@@ -37,12 +37,16 @@ export const useChatbot = () => {
   // تبديل حالة Chatbot
   const toggleChatbot = () => {
     contextToggleChatbot();
-  };
-  // إرسال رسالة
+  };  // إرسال رسالة
   const sendMessage = async (message: string) => {
     if (message.trim()) {
       await contextSendChatMessage(message.trim());
     }
+  };
+
+  // بدء محادثة جديدة
+  const startNewConversation = () => {
+    contextClearChatMessages();
   };
 
   // إضافة منتج إلى السلة من الشات بوت
@@ -69,8 +73,7 @@ export const useChatbot = () => {
     id: faq.id,
     question: faq.question[currentLanguage] || faq.question.EN,
     answer: faq.answer[currentLanguage] || faq.answer.EN,
-  }));
-  return {
+  }));  return {
     isChatbotOpen,
     chatMessages,
     isChatLoading,
@@ -82,6 +85,7 @@ export const useChatbot = () => {
     closeChatbot,
     toggleChatbot,
     sendMessage,
+    startNewConversation,
     addProductToCart,
     products,
     translations,

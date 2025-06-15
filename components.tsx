@@ -882,6 +882,7 @@ interface ChatbotWidgetProps {
   onAddToCart: (productId: string) => void;
   currencySymbol: string;
   storeSettings?: StoreSettings;
+  onStartNewConversation?: () => void; // إضافة دعم للمحادثة الجديدة
 }
 
 export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
@@ -889,6 +890,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   onToggle,
   messages,
   onSendMessage,
+  onStartNewConversation,
   faqs,
   currentLanguage,
   translations,
@@ -926,11 +928,21 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       await onSendMessage(inputMessage.trim());
       setInputMessage('');
     }
+  };  const handleNewConversation = async () => {
+    if (onStartNewConversation) {
+      onStartNewConversation();
+    } else {
+      // إرسال أمر محادثة جديدة
+      await onSendMessage(
+        currentLanguage === LanguageCode.AR 
+          ? 'محادثة جديدة' 
+          : 'new conversation'
+      );
+    }
   };
-  
+
   const handleFaqClick = async (question: string) => {
     // محاكاة إرسال المستخدم لسؤال FAQ
-    // سيعرض السؤال كما لو كان المستخدم قد كتبه، ثم يرد الروبوت.
     await onSendMessage(question);
   };
 
@@ -949,18 +961,30 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       {isOpen && (
         <div
           className={`fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-96 h-full sm:h-[70vh] max-h-[600px] bg-white rounded-lg shadow-xl flex flex-col z-50 ${currentLanguage === LanguageCode.AR ? 'sm:left-6 sm:right-auto text-right' : 'text-left'}`}
-        >
-          <div className='flex justify-between items-center p-4 bg-indigo-600 text-white rounded-t-lg'>
+        >          <div className='flex justify-between items-center p-4 bg-indigo-600 text-white rounded-t-lg'>
             <h3 className='font-semibold'>
               {translations.chatWithOurAssistant}
             </h3>
-            <button
-              onClick={onToggle}
-              className='text-indigo-200 hover:text-white'
-            >
-              <XMarkIcon className='h-6 w-6' />
-            </button>
-          </div>          <div className='flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50'>
+            <div className='flex items-center space-x-2'>
+              {messages.length > 0 && (
+                <button
+                  onClick={handleNewConversation}
+                  className='text-indigo-200 hover:text-white p-1 rounded transition-colors'
+                  title={translations.newConversation}
+                >
+                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4.5v15m7.5-7.5h-15' />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={onToggle}
+                className='text-indigo-200 hover:text-white'
+              >
+                <XMarkIcon className='h-6 w-6' />
+              </button>
+            </div>
+          </div><div className='flex-grow p-4 overflow-y-auto space-y-3 bg-gray-50'>
             {messages.map(msg => (
               <ChatMessageBubble
                 key={msg.id}
@@ -1043,9 +1067,19 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 </Button>
               </div>
             </div>
-          )}
-
-          <div className='p-3 border-t bg-white'>
+          )}          <div className='p-3 border-t bg-white'>
+            {messages.length > 0 && (
+              <div className='flex justify-center mb-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={handleNewConversation}
+                  className='text-xs px-3 py-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50'
+                >
+                  🔄 {translations.newConversation}
+                </Button>
+              </div>
+            )}
             <div className='flex items-center space-x-2'>
               <input
                 type='text'

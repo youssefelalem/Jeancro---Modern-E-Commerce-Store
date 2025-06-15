@@ -26,9 +26,9 @@ const TestAppContent: React.FC = () => {
     logoutAdmin,
     setIsCartOpen,
     isChatbotOpen,
-    toggleChatbot,
-    chatMessages,
+    toggleChatbot,    chatMessages,
     sendChatMessage,
+    clearChatMessages,
     isChatLoading,
     faqs,
     toast,
@@ -77,12 +77,12 @@ const TestAppContent: React.FC = () => {
           currentLanguage={currentLanguage}
         />
       )}      {/* Chatbot Widget - يظهر فقط في الصفحات العادية وليس في صفحات الإدارة */}
-      {!isAdminPage && currentStoreSettings.chatbot.enabled && (
-        <ChatbotWidget
+      {!isAdminPage && currentStoreSettings.chatbot.enabled && (        <ChatbotWidget
           isOpen={isChatbotOpen}
           onToggle={toggleChatbot}
           messages={chatMessages}
           onSendMessage={sendChatMessage}
+          onStartNewConversation={clearChatMessages}
           faqs={faqs}
           currentLanguage={currentLanguage}
           translations={translations}

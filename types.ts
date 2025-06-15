@@ -110,10 +110,9 @@ export type TranslationKeys =
   | 'manageFAQs' | 'addFAQ' | 'editFAQ' | 'deleteFAQ' | 'question' | 'answer'  | 'settingsSuccessfullySaved' | 'itemAddedToCart' | 'itemRemovedFromCart' | 'cartUpdated'
   | 'chatWithOurAssistant' | 'howCanIHelpYou' | 'search' | 'category'
   | 'productDetails' | 'close' | 'noAdsAvailable' | 'learnMore'
-  | 'productNotFound' | 'goBack' | 'inStock'
-  | 'exploreOurCollection' | 'productsFound' | 'sortBy' | 'name' | 'priceLowToHigh' | 'priceHighToLow' 
+  | 'productNotFound' | 'goBack' | 'inStock'  | 'exploreOurCollection' | 'productsFound' | 'sortBy' | 'name' | 'priceLowToHigh' | 'priceHighToLow' 
   | 'newest' | 'showing' | 'of' | 'tryDifferentFilters' | 'previous' | 'next'
-  | 'backToStore';
+  | 'backToStore' | 'newConversation' | 'chatCleared' | 'chatWelcomeNew';
 
 export type Translations = Record<TranslationKeys, string>;
 

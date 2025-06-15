@@ -1,16 +1,13 @@
 /**
- * ملف مساعد للشات بوت
+ * ملف مساعد للشات بوت المحسن - محدث للتفاعل مع البيانات الحية
  * يوفر وظائف ومرافق للتعامل مع عرض المنتجات ومعالجة الطلبات المتعلقة بالمنتجات
+ * يتفاعل مع البيانات الحية من المتجر ويعرض المعلومات المحدثة
  */
 
-import { Product, LanguageCode } from '../types';
+import { Product, LanguageCode, Category, StoreSettings, Translations } from '../types';
 
 /**
  * إنشاء رسالة بعرض المنتجات المتاحة
- * @param products قائمة المنتجات
- * @param language اللغة المستخدمة
- * @param currencySymbol رمز العملة
- * @returns نص رسالة الشات بوت المنسقة لعرض المنتجات
  */
 export const generateProductsListMessage = (
   products: Product[],
@@ -19,8 +16,8 @@ export const generateProductsListMessage = (
 ): string => {
   if (products.length === 0) {
     return language === LanguageCode.AR
-      ? '🛍️ عذراً، لا توجد منتجات متوفرة حالياً.'
-      : '🛍️ Sorry, there are no products available at the moment.';
+      ? '😔 عذراً، لا توجد منتجات متاحة حالياً.'
+      : '😔 Sorry, no products are currently available.';
   }
 
   let message = language === LanguageCode.AR
@@ -30,31 +27,27 @@ export const generateProductsListMessage = (
   products.forEach((product, index) => {
     const name = product.name[language] || product.name[LanguageCode.EN];
     const description = product.description[language] || product.description[LanguageCode.EN];
-    const shortDesc = description.length > 60 
-      ? `${description.substring(0, 60)}...` 
+    const shortDescription = description.length > 100 
+      ? `${description.substring(0, 100)}...` 
       : description;
 
-    // تنسيق محسن مع رموز تعبيرية وخطوط فاصلة
-    message += `━━━━━━━━━━━━━━━━━━\n`;
-    message += `📦 **${index + 1}. ${name}**\n\n`;
-    message += `📝 *${shortDesc}*\n\n`;
-    message += `💰 **${language === LanguageCode.AR ? 'السعر' : 'Price'}:** ${currencySymbol}${product.price.toFixed(2)}\n`;
+    message += `**${index + 1}. ${name}**\n\n`;
+    message += `📝 ${shortDescription}\n\n`;
+    message += `💰 **${currencySymbol}${product.price.toFixed(2)}**\n`;
     
-    // إضافة معلومة عن توفر المنتج
     if (product.inStock !== false) {
       message += language === LanguageCode.AR 
-        ? `✅ **متوفر الآن**\n\n`
-        : `✅ **Available Now**\n\n`;
+        ? `✅ متوفر الآن\n\n`
+        : `✅ Available Now\n\n`;
     } else {
       message += language === LanguageCode.AR 
-        ? `❌ **غير متوفر حالياً**\n\n`
-        : `❌ **Currently Out of Stock**\n\n`;
-    }  });
+        ? `❌ غير متوفر حالياً\n\n`
+        : `❌ Currently Out of Stock\n\n`;
+    }
+    
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+  });
 
-  // إضافة خط فاصل نهائي
-  message += `━━━━━━━━━━━━━━━━━━\n\n`;
-  
-  // تعليمات محسنة للمستخدم
   message += language === LanguageCode.AR
     ? '💡 **كيف تتفاعل معي؟**\n\n'
     : '💡 **How to interact with me?**\n\n';
@@ -76,10 +69,6 @@ export const generateProductsListMessage = (
 
 /**
  * إنشاء رسالة بتفاصيل منتج محدد
- * @param product المنتج المراد عرض تفاصيله
- * @param language اللغة المستخدمة
- * @param currencySymbol رمز العملة
- * @returns نص رسالة الشات بوت المنسقة لعرض تفاصيل المنتج
  */
 export const generateProductDetailsMessage = (
   product: Product,
@@ -93,21 +82,13 @@ export const generateProductDetailsMessage = (
   let message = `🎯 **تفاصيل المنتج** | **Product Details**\n`;
   message += `━━━━━━━━━━━━━━━━━━\n\n`;
   
-  // اسم المنتج مع رمز تعبيري
   message += `🏷️ **${name}**\n\n`;
-  
-  // إضافة صورة المنتج
   message += `📸 [PRODUCT_IMAGE:${product.imageUrl}]\n\n`;
-  
-  // الوصف
   message += `📝 **${language === LanguageCode.AR ? 'الوصف' : 'Description'}:**\n`;
   message += `${description}\n\n`;
-  
-  // السعر مع تنسيق جذاب
   message += `💰 **${language === LanguageCode.AR ? 'السعر' : 'Price'}:** `;
   message += `${currencySymbol}${product.price.toFixed(2)}\n\n`;
   
-  // حالة التوفر
   if (product.inStock !== false) {
     message += language === LanguageCode.AR 
       ? `✅ **الحالة:** متوفر الآن\n\n`
@@ -118,28 +99,23 @@ export const generateProductDetailsMessage = (
       : `❌ **Status:** Currently Out of Stock\n\n`;
   }
   
-  // المميزات
-  if (details.features && details.features.length > 0) {
-    message += `⭐ **${language === LanguageCode.AR ? 'المميزات' : 'Features'}:**\n`;
-      
+  if (details?.features && details.features.length > 0) {
+    message += `✨ **${language === LanguageCode.AR ? 'المميزات' : 'Features'}:**\n`;
     details.features.forEach(feature => {
-      message += `  🔸 ${feature}\n`;
+      message += `• ${feature}\n`;
     });
-    message += '\n';
+    message += `\n`;
   }
-    // المواصفات
-  if (details.specifications) {
-    message += `🔧 **${language === LanguageCode.AR ? 'المواصفات' : 'Specifications'}:**\n`;
-      
+  
+  if (details?.specifications) {
+    message += `📋 **${language === LanguageCode.AR ? 'المواصفات' : 'Specifications'}:**\n`;
     Object.entries(details.specifications).forEach(([key, value]) => {
-      message += `  🔹 ${key}: ${value}\n`;
+      message += `• **${key}:** ${value}\n`;
     });
-    message += '\n';
+    message += `\n`;
   }
   
-  // خط فاصل وتعليمات الطلب
   message += `━━━━━━━━━━━━━━━━━━\n\n`;
-  
   message += language === LanguageCode.AR
     ? `🛒 **هل تريد طلب هذا المنتج؟**\n\n`
     : `🛒 **Want to order this product?**\n\n`;
@@ -157,15 +133,14 @@ export const generateProductDetailsMessage = (
 
 /**
  * تحليل طلب المستخدم للحصول على منتج معين
- * @param message رسالة المستخدم
- * @returns رقم المنتج إذا كان موجوداً، أو null إذا لم يكن هناك طلب لمنتج محدد
  */
 export const parseProductRequest = (message: string): number | null => {
   const productNumberPattern = /(?:product|منتج|product number|رقم المنتج|منتج رقم)\s*(\d+)/i;
   const match = message.match(productNumberPattern);
   
   if (match && match[1]) {
-    return parseInt(match[1], 10);
+    const productNumber = parseInt(match[1], 10);
+    return isNaN(productNumber) ? null : productNumber;
   }
   
   return null;
@@ -173,426 +148,527 @@ export const parseProductRequest = (message: string): number | null => {
 
 /**
  * فحص ما إذا كان المستخدم يسأل عن المنتجات
- * @param message رسالة المستخدم
- * @returns true إذا كان المستخدم يسأل عن المنتجات، false خلاف ذلك
  */
 export const isAskingAboutProducts = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
   
-  return lowerMessage.includes('منتج') || 
-         lowerMessage.includes('منتجات') || 
-         lowerMessage.includes('المنتجات') || 
-         lowerMessage.includes('product') || 
-         lowerMessage.includes('products') ||
-         lowerMessage.includes('عرض المنتجات') ||
-         lowerMessage.includes('show products') ||
-         lowerMessage.includes('المتاحة') ||
-         lowerMessage.includes('available');
+  const arabicPatterns = [
+    'منتج', 'منتجات', 'المنتجات', 'السلع', 'البضائع', 'الأصناف',
+    'ما عندكم', 'شو عندكم', 'ايش عندكم', 'وش عندكم',
+    'عرض المنتجات', 'اعرض المنتجات', 'المتاحة', 'المتوفرة',
+    'الكتالوج', 'القائمة', 'المعروض', 'الموجود',
+    'أريد أشوف', 'بدي أشوف', 'ممكن أشوف', 'ممكن أعرف',
+    'ايش موجود', 'شو موجود', 'ما هو متوفر', 'متوفر عندكم'
+  ];
+  
+  const englishPatterns = [
+    'product', 'products', 'item', 'items', 'catalog', 'catalogue',
+    'show products', 'show me', 'what do you have', 'what products',
+    'available', 'collection', 'inventory', 'merchandise',
+    'browse', 'shopping', 'clothes', 'clothing',
+    'what can i buy', 'what\'s available', 'show catalog'
+  ];
+  
+  return [...arabicPatterns, ...englishPatterns].some(pattern => 
+    lowerMessage.includes(pattern)
+  );
 };
 
 /**
- * فحص ما إذا كان المستخدم يسأل عن كيفية تقديم الطلبات
- * @param message رسالة المستخدم
- * @returns true إذا كان المستخدم يسأل عن تقديم الطلبات
+ * باقي الوظائف...
  */
 export const isAskingAboutOrdering = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
-  
-  return lowerMessage.includes('كيف أطلب') ||
-         lowerMessage.includes('تقديم طلب') ||
-         lowerMessage.includes('كيفية الطلب') ||
-         lowerMessage.includes('خطوات الطلب') ||
-         lowerMessage.includes('how to order') ||
-         lowerMessage.includes('placing order') ||
-         lowerMessage.includes('order process') ||
-         lowerMessage.includes('كيف أشتري') ||
-         lowerMessage.includes('الشراء') ||
-         lowerMessage.includes('شراء منتج') ||
-         lowerMessage.includes('يمكنني شراء') ||
-         lowerMessage.includes('كيف يمكنني شراء') ||
-         lowerMessage.includes('سلة التسوق') ||
-         lowerMessage.includes('checkout') ||
-         lowerMessage.includes('purchase') ||
-         lowerMessage.includes('how can i purchase') ||
-         lowerMessage.includes('how to purchase') ||
-         lowerMessage.includes('how to buy') ||
-         lowerMessage.includes('buying process') ||
-         lowerMessage.includes('purchasing');
+  const patterns = [
+    'كيف أطلب', 'كيف أشتري', 'أريد أطلب', 'بدي أطلب',
+    'how to order', 'how to buy', 'i want to order', 'ordering process'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
 };
 
-/**
- * فحص ما إذا كان المستخدم يسأل عن المدفوعات
- * @param message رسالة المستخدم
- * @returns true إذا كان المستخدم يسأل عن المدفوعات
- */
 export const isAskingAboutPayments = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
-  
-  return lowerMessage.includes('دفع') ||
-         lowerMessage.includes('مدفوعات') ||
-         lowerMessage.includes('طريقة الدفع') ||
-         lowerMessage.includes('طرق الدفع') ||
-         lowerMessage.includes('payment') ||
-         lowerMessage.includes('pay') ||
-         lowerMessage.includes('billing') ||
-         lowerMessage.includes('كاش') ||
-         lowerMessage.includes('cash') ||
-         lowerMessage.includes('بطاقة') ||
-         lowerMessage.includes('card') ||
-         lowerMessage.includes('تحويل') ||
-         lowerMessage.includes('transfer') ||
-         lowerMessage.includes('عند الاستلام');
+  const patterns = [
+    'دفع', 'مدفوعات', 'الدفع', 'payment', 'pay', 'payments'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
 };
 
-/**
- * فحص ما إذا كان المستخدم يسأل عن الشحن
- * @param message رسالة المستخدم
- * @returns true إذا كان المستخدم يسأل عن الشحن
- */
 export const isAskingAboutShipping = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
-  
-  return lowerMessage.includes('شحن') ||
-         lowerMessage.includes('توصيل') ||
-         lowerMessage.includes('وقت التوصيل') ||
-         lowerMessage.includes('تكلفة الشحن') ||
-         lowerMessage.includes('shipping') ||
-         lowerMessage.includes('delivery') ||
-         lowerMessage.includes('shipping cost') ||
-         lowerMessage.includes('delivery time') ||
-         lowerMessage.includes('كم يوم') ||
-         lowerMessage.includes('متى يصل');
+  const patterns = [
+    'شحن', 'الشحن', 'توصيل', 'التوصيل', 'shipping', 'delivery'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
 };
 
-/**
- * فحص ما إذا كان المستخدم يطلب التواصل أو رقم WhatsApp
- * @param message رسالة المستخدم
- * @returns true إذا كان المستخدم يطلب التواصل
- */
 export const isAskingAboutContact = (message: string): boolean => {
   const lowerMessage = message.toLowerCase();
+  const patterns = [
+    'تواصل', 'التواصل', 'واتساب', 'whatsapp', 'contact', 'phone'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
+};
+
+export const isAskingAboutNewProducts = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  const patterns = [
+    'جديد', 'جديدة', 'آخر', 'أحدث', 'new', 'latest', 'recent'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
+};
+
+export const isAskingAboutStoreInfo = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  const patterns = [
+    'معلومات', 'عن المتجر', 'من أنتم', 'about', 'about us', 'store info'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
+};
+
+export const isAskingAboutStats = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  const patterns = [
+    'كم منتج', 'عدد المنتجات', 'إحصائيات', 'how many', 'statistics', 'stats'
+  ];
+  return patterns.some(pattern => lowerMessage.includes(pattern));
+};
+
+export const parseProductCategory = (message: string, categories: Category[]): string | null => {
+  const lowerMessage = message.toLowerCase();
   
-  return lowerMessage.includes('تواصل') ||
-         lowerMessage.includes('واتساب') ||
-         lowerMessage.includes('whatsapp') ||
-         lowerMessage.includes('contact') ||
-         lowerMessage.includes('رقم') ||
-         lowerMessage.includes('number') ||
-         lowerMessage.includes('هاتف') ||
-         lowerMessage.includes('phone') ||
-         lowerMessage.includes('اتصال') ||
-         lowerMessage.includes('call') ||
-         lowerMessage.includes('التواصل') ||
-         lowerMessage.includes('المباشر') ||
-         lowerMessage.includes('direct') ||
-         lowerMessage.includes('communicate') ||
-         lowerMessage.includes('reach') ||
-         lowerMessage.includes('get in touch');
-};
-
-/**
- * إنشاء رسالة بمعلومات التواصل ورقم WhatsApp
- * @param language اللغة المستخدمة
- * @param whatsappNumber رقم WhatsApp من إعدادات المتجر
- * @returns نص رسالة الشات بوت بمعلومات التواصل
- */
-export const generateContactMessage = (
-  language: LanguageCode, 
-  whatsappNumber?: string
-): string => {
-  if (language === LanguageCode.AR) {
-    let message = `📞 **طرق التواصل مع متجر جينكرو:**\n\n`;
-    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+  for (const category of categories) {
+    const arabicName = category.name.AR?.toLowerCase();
+    const englishName = category.name.EN?.toLowerCase();
     
-    if (whatsappNumber) {
-      message += `💚 **واتساب (الطريقة المفضلة):**\n`;
-      message += `📱 ${whatsappNumber}\n\n`;
-      message += `🚀 **المميزات:**\n`;
-      message += `  🔸 رد سريع خلال دقائق\n`;
-      message += `  🔸 إرسال صور للمنتجات\n`;
-      message += `  🔸 تأكيد الطلبات فوري\n`;
-      message += `  🔸 متابعة حالة الطلب\n\n`;    } else {
-      message += `💚 **واتساب:**\n`;
-      message += `📱 +212123456789\n\n`;
+    if ((arabicName && lowerMessage.includes(arabicName)) ||
+        (englishName && lowerMessage.includes(englishName))) {
+      return category.id;
     }
-    
-    message += `📧 **البريد الإلكتروني:**\n`;
-    message += `✉️ info@jeancro.com\n\n`;
-    
-    message += `🕒 **أوقات الاستجابة:**\n`;
-    message += `  🔸 واتساب: فوري (24/7)\n`;
-    message += `  🔸 البريد: خلال 24 ساعة\n\n`;
-    
-    message += `━━━━━━━━━━━━━━━━━━\n\n`;
-    message += `💡 **نصيحة:** اكتب "أريد طلب" وسأساعدك في إعداد طلبك وإرساله مباشرة عبر واتساب!`;
-    
-    return message;
-  } else {
-    let message = `📞 **Contact Jeancro Store:**\n\n`;
-    message += `━━━━━━━━━━━━━━━━━━\n\n`;
-    
-    if (whatsappNumber) {
-      message += `💚 **WhatsApp (Preferred Method):**\n`;
-      message += `📱 ${whatsappNumber}\n\n`;
-      message += `🚀 **Benefits:**\n`;
-      message += `  🔸 Quick response within minutes\n`;
-      message += `  🔸 Send product images\n`;
-      message += `  🔸 Instant order confirmation\n`;
-      message += `  🔸 Order status tracking\n\n`;
-    } else {
-      message += `💚 **WhatsApp:**\n`;
-      message += `📱 Coming soon - We'll add the number shortly\n\n`;
-    }
-    
-    message += `📧 **Email:**\n`;
-    message += `✉️ info@jeancro.com\n\n`;
-    
-    message += `🕒 **Response Times:**\n`;
-    message += `  🔸 WhatsApp: Instant (24/7)\n`;
-    message += `  🔸 Email: Within 24 hours\n\n`;
-    
-    message += `━━━━━━━━━━━━━━━━━━\n\n`;
-    message += `💡 **Tip:** Type "I want to order" and I'll help you prepare and send your order directly via WhatsApp!`;
-    
-    return message;
   }
+  
+  return null;
 };
 
-/**
- * إنشاء رسالة تفصيلية عن كيفية تقديم الطلبات
- * @param language اللغة المستخدمة
- * @returns نص مفصل عن عملية تقديم الطلبات
- */
+// رسائل مولّدة
+export const generateContactMessage = (language: LanguageCode, whatsappNumber?: string): string => {
+  let message = language === LanguageCode.AR
+    ? '📞 **معلومات التواصل:**\n\n'
+    : '📞 **Contact Information:**\n\n';
+    
+  if (whatsappNumber) {
+    message += language === LanguageCode.AR
+      ? `📱 **واتساب:** ${whatsappNumber}\n`
+      : `📱 **WhatsApp:** ${whatsappNumber}\n`;
+  }
+  
+  return message;
+};
+
 export const generateOrderingInstructionsMessage = (language: LanguageCode): string => {
-  if (language === LanguageCode.AR) {
-    return `🛍️ **دليل الطلب السريع - متجر جينكرو**
-━━━━━━━━━━━━━━━━━━
-
-✨ **خطوات بسيطة لطلبك:**
-
-🔍 **1. تصفح واختر**
-   • تصفح مجموعة منتجاتنا المميزة
-   • اختر المنتج الذي يعجبك
-
-📱 **2. أرسل طلبك بسهولة**
-   • اضغط على "إضافة إلى السلة"
-   • اضغط على زر "إرسال عبر WhatsApp"
-   • سيتم فتح واتساب مع تفاصيل طلبك جاهزة
-
-⚡ **3. تأكيد فوري**
-   • فريقنا سيرد عليك خلال دقائق
-   • تأكيد الطلب وتفاصيل التوصيل
-   • اختيار طريقة الدفع المناسبة
-
-🚚 **4. استلام سريع**
-   • توصيل مجاني للطلبات فوق 500 د.م
-   • خدمة توصيل سريعة وآمنة
-   • ضمان الجودة والرضا التام
-
-💰 **طرق الدفع المتاحة:**
-   ✅ الدفع عند الاستلام (مفضل)
-   ✅ بطاقات الائتمان
-   ✅ التحويل البنكي
-   ✅ PayPal
-
-🎯 **لماذا جينكرو؟**
-   • منتجات عالية الجودة
-   • أسعار تنافسية
-   • خدمة عملاء مميزة
-   • توصيل سريع وموثوق
-   
-📞 **هل تحتاج مساعدة؟** اكتب "تواصل" للحصول على رقم واتساب المباشر!`;
-  } else {
-    return `🛍️ **Quick Order Guide - Jeancro Store**
-━━━━━━━━━━━━━━━━━━
-
-✨ **Simple Steps for Your Order:**
-
-🔍 **1. Browse & Choose**
-   • Explore our premium product collection
-   • Select the product you love
-
-📱 **2. Send Your Order Easily**
-   • Click "Add to Cart"
-   • Click "Send via WhatsApp" button
-   • WhatsApp will open with your order details ready
-
-⚡ **3. Instant Confirmation**
-   • Our team will reply within minutes
-   • Order confirmation and delivery details
-   • Choose your preferred payment method
-
-🚚 **4. Fast Delivery**
-   • Free shipping for orders over 500 MAD
-   • Quick and secure delivery service
-   • Quality and satisfaction guarantee
-
-💰 **Available Payment Methods:**
-   ✅ Cash on Delivery (preferred)
-   ✅ Credit/Debit Cards
-   ✅ Bank Transfer
-   ✅ PayPal
-
-🎯 **Why Choose Jeancro?**
-   • High-quality products
-   • Competitive prices
-   • Excellent customer service
-   • Fast and reliable delivery
-   
-📞 **Need Help?** Type "contact" to get our direct WhatsApp number!`;
-  }
+  return language === LanguageCode.AR
+    ? '🛒 **كيفية تقديم الطلبات:**\n\n1. اختر المنتج المطلوب\n2. تواصل معنا عبر واتساب\n3. سنساعدك في إتمام الطلب'
+    : '🛒 **How to Place Orders:**\n\n1. Choose your desired product\n2. Contact us via WhatsApp\n3. We\'ll help you complete your order';
 };
 
-/**
- * إنشاء رسالة تفصيلية عن طرق الدفع
- * @param language اللغة المستخدمة
- * @returns نص مفصل عن طرق الدفع المتاحة
- */
 export const generatePaymentMethodsMessage = (language: LanguageCode): string => {
-  if (language === LanguageCode.AR) {
-    return `**طرق الدفع المتاحة في متجر جينكرو:**
+  return language === LanguageCode.AR
+    ? '💳 **طرق الدفع:**\n\n• الدفع عند الاستلام\n• البطاقات البنكية\n• التحويل البنكي'
+    : '💳 **Payment Methods:**\n\n• Cash on Delivery\n• Credit Cards\n• Bank Transfer';
+};
 
-💰 **الدفع عند الاستلام**
-   - ادفع للمندوب عند وصول الطلب
-   - بدون رسوم إضافية
-   - الطريقة الأكثر أماناً
+export const generateShippingInfoMessage = (language: LanguageCode): string => {
+  return language === LanguageCode.AR
+    ? '🚚 **معلومات الشحن:**\n\n• الشحن العادي: 3-5 أيام\n• الشحن السريع: 1-2 يوم\n• شحن مجاني للطلبات فوق 500 درهم'
+    : '🚚 **Shipping Information:**\n\n• Standard: 3-5 days\n• Express: 1-2 days\n• Free shipping over 500 MAD';
+};
 
-💳 **البطاقات البنكية**
-   - Visa و Mastercard
-   - دفع آمن ومشفر بتقنية SSL
-   - تأكيد فوري للطلب
-
-🏦 **التحويل البنكي**
-   - تحويل مباشر لحساب المتجر
-   - يرجى إرسال إيصال التحويل
-   - معالجة الطلب خلال 24 ساعة
-
-🌐 **PayPal**
-   - دفع دولي آمن
-   - حماية للمشتري
-   - سهولة في الاستخدام
-
-📱 **الدفع الإلكتروني**
-   - عبر البنوك المحلية
-   - تطبيقات الدفع الإلكتروني
-   - تأكيد فوري
-
-**ضمانات الأمان:**
-✅ جميع المعاملات مشفرة
-✅ عدم حفظ بيانات البطاقات
-✅ إمكانية الإرجاع والاستبدال
-
-أي طريقة دفع تفضل؟`;
-  } else {
-    return `**Available Payment Methods at Jeancro:**
-
-💰 **Cash on Delivery**
-   - Pay the delivery person upon arrival
-   - No additional fees
-   - Most secure method
-
-💳 **Bank Cards**
-   - Visa & Mastercard accepted
-   - Secure SSL encrypted payment
-   - Instant order confirmation
-
-🏦 **Bank Transfer**
-   - Direct transfer to store account
-   - Please send transfer receipt
-   - Order processed within 24 hours
-
-🌐 **PayPal**
-   - Secure international payment
-   - Buyer protection
-   - Easy to use
-
-📱 **Electronic Payment**
-   - Through local banks
-   - Mobile payment apps
-   - Instant confirmation
-
-**Security Guarantees:**
-✅ All transactions encrypted
-✅ Card details not stored
-✅ Return & exchange available
-
-Which payment method do you prefer?`;
+// الوظائف الجديدة المحسنة
+export const generateNewProductsMessage = (
+  products: Product[],
+  language: LanguageCode,
+  currencySymbol: string,
+  limit: number = 3
+): string => {
+  const latestProducts = products.slice(-limit).reverse();
+  
+  if (latestProducts.length === 0) {
+    return language === LanguageCode.AR
+      ? '🆕 لا توجد منتجات جديدة حالياً.'
+      : '🆕 No new products available at the moment.';
   }
+
+  let message = language === LanguageCode.AR
+    ? '🆕 **آخر منتجاتنا الجديدة:**\n\n'
+    : '🆕 **Our Latest Products:**\n\n';
+
+  latestProducts.forEach((product, index) => {
+    const name = product.name[language] || product.name[LanguageCode.EN];
+    const description = product.description[language] || product.description[LanguageCode.EN];
+    const shortDesc = description.length > 80 
+      ? `${description.substring(0, 80)}...` 
+      : description;
+
+    message += `✨ **${index + 1}. ${name}**\n\n`;
+    message += `📝 ${shortDesc}\n\n`;
+    message += `💰 **${currencySymbol}${product.price.toFixed(2)}**\n`;
+    
+    if (product.inStock !== false) {
+      message += language === LanguageCode.AR 
+        ? `✅ متوفر الآن\n\n`
+        : `✅ Available Now\n\n`;
+    } else {
+      message += language === LanguageCode.AR 
+        ? `⏳ سيتوفر قريباً\n\n`
+        : `⏳ Coming Soon\n\n`;
+    }
+    
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+  });
+  
+  message += language === LanguageCode.AR
+    ? '💡 **اكتب رقم المنتج لمعرفة التفاصيل الكاملة!**'
+    : '💡 **Type the product number for full details!**';
+
+  return message;
+};
+
+export const generateStoreInfoMessage = (
+  storeSettings: StoreSettings,
+  language: LanguageCode,
+  stats?: {
+    totalProducts: number;
+    totalCategories: number;
+    availableProducts: number;
+  }
+): string => {
+  const storeName = storeSettings.storeName;
+  
+  let message = language === LanguageCode.AR
+    ? `🏪 **مرحباً بك في متجر ${storeName}!**\n\n`
+    : `🏪 **Welcome to ${storeName} Store!**\n\n`;
+    
+  if (language === LanguageCode.AR) {
+    message += `🌟 **من نحن؟**\n`;
+    message += `نحن متجر جينكرو المتخصص في الأزياء العصرية والملابس المصنوعة يدوياً.\n\n`;
+    
+    if (stats) {
+      message += `📊 **إحصائياتنا:**\n`;
+      message += `📦 ${stats.totalProducts} منتج إجمالي\n`;
+      message += `✅ ${stats.availableProducts} منتج متوفر\n`;
+      message += `🏷️ ${stats.totalCategories} فئة مختلفة\n\n`;
+    }
+    
+    if (storeSettings.whatsappNumber) {
+      message += `📱 واتساب: ${storeSettings.whatsappNumber}\n`;
+    }
+  } else {
+    message += `🌟 **Who We Are?**\n`;
+    message += `We are Jeancro store, specializing in modern fashion and handmade clothing.\n\n`;
+    
+    if (stats) {
+      message += `📊 **Our Stats:**\n`;
+      message += `📦 ${stats.totalProducts} total products\n`;
+      message += `✅ ${stats.availableProducts} available products\n`;
+      message += `🏷️ ${stats.totalCategories} categories\n\n`;
+    }
+    
+    if (storeSettings.whatsappNumber) {
+      message += `📱 WhatsApp: ${storeSettings.whatsappNumber}\n`;
+    }
+  }
+  
+  return message;
+};
+
+export const generateStatsMessage = (
+  stats: {
+    totalProducts: number;
+    totalCategories: number;
+    availableProducts: number;
+    outOfStockProducts: number;
+  },
+  language: LanguageCode
+): string => {
+  let message = language === LanguageCode.AR
+    ? '📊 **إحصائيات متجر جينكرو:**\n\n'
+    : '📊 **Jeancro Store Statistics:**\n\n';
+    
+  if (language === LanguageCode.AR) {
+    message += `📦 **إجمالي المنتجات:** ${stats.totalProducts}\n\n`;
+    message += `✅ **منتجات متوفرة:** ${stats.availableProducts}\n\n`;
+    message += `❌ **منتجات غير متوفرة:** ${stats.outOfStockProducts}\n\n`;
+    message += `🏷️ **عدد الفئات:** ${stats.totalCategories}\n\n`;
+    message += `💡 **نقوم بتحديث منتجاتنا باستمرار!**`;
+  } else {
+    message += `📦 **Total Products:** ${stats.totalProducts}\n\n`;
+    message += `✅ **Available Products:** ${stats.availableProducts}\n\n`;
+    message += `❌ **Out of Stock:** ${stats.outOfStockProducts}\n\n`;
+    message += `🏷️ **Categories:** ${stats.totalCategories}\n\n`;
+    message += `💡 **We constantly update our products!**`;
+  }
+  
+  return message;
+};
+
+export const generateCategoryProductsMessage = (
+  products: Product[],
+  categoryName: string,
+  language: LanguageCode,
+  currencySymbol: string
+): string => {
+  if (products.length === 0) {
+    return language === LanguageCode.AR
+      ? `😔 عذراً، لا توجد منتجات في فئة "${categoryName}" حالياً.`
+      : `😔 Sorry, no products found in "${categoryName}" category.`;
+  }
+
+  let message = language === LanguageCode.AR
+    ? `🏷️ **منتجات فئة "${categoryName}":**\n\n`
+    : `🏷️ **Products in "${categoryName}" Category:**\n\n`;
+
+  products.forEach((product, index) => {
+    const name = product.name[language] || product.name[LanguageCode.EN];
+    const description = product.description[language] || product.description[LanguageCode.EN];
+    const shortDesc = description.length > 60 
+      ? `${description.substring(0, 60)}...` 
+      : description;
+
+    message += `${index + 1}. **${name}**\n`;
+    message += `   ${shortDesc}\n`;
+    message += `   💰 ${currencySymbol}${product.price.toFixed(2)}\n`;
+    
+    if (product.inStock !== false) {
+      message += language === LanguageCode.AR ? `   ✅ متوفر\n\n` : `   ✅ Available\n\n`;
+    } else {
+      message += language === LanguageCode.AR ? `   ❌ غير متوفر\n\n` : `   ❌ Out of Stock\n\n`;
+    }
+  });
+  
+  message += language === LanguageCode.AR
+    ? '💡 اكتب رقم المنتج لمعرفة التفاصيل!'
+    : '💡 Type product number for details!';
+
+  return message;
 };
 
 /**
- * إنشاء رسالة تفصيلية عن الشحن والتوصيل
- * @param language اللغة المستخدمة
- * @returns نص مفصل عن خدمات الشحن
+ * دالة شاملة لمعالجة الرسائل
  */
-export const generateShippingInfoMessage = (language: LanguageCode): string => {
-  if (language === LanguageCode.AR) {
-    return `**معلومات الشحن والتوصيل في متجر جينكرو:**
-
-🚚 **تكلفة الشحن:**
-   - مجاني للطلبات أكثر من 500 درهم
-   - 30 درهم للطلبات الأقل
-
-📍 **مناطق التوصيل:**
-   - جميع أنحاء المغرب
-   - التوصيل للمنزل أو المكتب
-   - إمكانية الاستلام من المتجر
-
-⏰ **أوقات التوصيل:**
-   - داخل الدار البيضاء: 1-2 يوم عمل
-   - المدن الرئيسية: 2-3 أيام عمل
-   - المناطق النائية: 3-5 أيام عمل
-   - الشحن الدولي: 7-14 يوم عمل
-
-📦 **معالجة الطلبات:**
-   - تجهيز الطلب: 24-48 ساعة
-   - تأكيد الشحن عبر SMS
-   - رقم تتبع للمتابعة
-
-🕒 **أوقات العمل للتوصيل:**
-   - السبت - الخميس: 9 صباحاً - 6 مساءً
-   - الجمعة: راحة
-   - إمكانية تحديد وقت مفضل
-
-✅ **ضمانات التوصيل:**
-   - تغليف آمن ومحترف
-   - فحص المنتج قبل الاستلام
-   - إرجاع مجاني في حالة عدم المطابقة
-
-هل تريد معرفة تكلفة الشحن لمنطقتك؟`;
-  } else {
-    return `**Shipping & Delivery Information at Jeancro:**
-
-🚚 **Shipping Costs:**
-   - Free for orders over 500 MAD
-   - 30 MAD for smaller orders
-
-📍 **Delivery Areas:**
-   - All Morocco regions
-   - Home or office delivery
-   - Store pickup available
-
-⏰ **Delivery Times:**
-   - Casablanca area: 1-2 business days
-   - Major cities: 2-3 business days
-   - Remote areas: 3-5 business days
-   - International: 7-14 business days
-
-📦 **Order Processing:**
-   - Order preparation: 24-48 hours
-   - SMS shipping confirmation
-   - Tracking number provided
-
-🕒 **Delivery Hours:**
-   - Saturday - Thursday: 9 AM - 6 PM
-   - Friday: Rest day
-   - Preferred time slot available
-
-✅ **Delivery Guarantees:**
-   - Professional secure packaging
-   - Product inspection before receipt
-   - Free return if not matching
-
-Want to know shipping cost for your area?`;
+export const processUserMessage = (
+  message: string,
+  context: {
+    products: Product[];
+    categories: Category[];
+    storeSettings: StoreSettings;
+  },
+  language: LanguageCode,
+  options?: {
+    onNewConversationRequest?: () => void;
   }
+): string => {
+  const { products, categories, storeSettings } = context;
+  const currencySymbol = storeSettings.currencySymbol;
+  
+  const stats = {
+    totalProducts: products.length,
+    totalCategories: categories.length,
+    availableProducts: products.filter(p => p.inStock !== false).length,
+    outOfStockProducts: products.filter(p => p.inStock === false).length
+  };
+  
+  // فحص طلب محادثة جديدة أولاً
+  if (isRequestingNewConversation(message)) {
+    // إذا كان هناك callback لمسح المحادثة، استدعه
+    if (options?.onNewConversationRequest) {
+      options.onNewConversationRequest();
+    }
+    
+    // إرجاع رسالة ترحيب للمحادثة الجديدة
+    return generateNewConversationWelcomeMessage(language, storeSettings);
+  }
+  
+  if (isAskingAboutNewProducts(message)) {
+    return generateNewProductsMessage(products, language, currencySymbol);
+  }
+  
+  if (isAskingAboutStoreInfo(message)) {
+    return generateStoreInfoMessage(storeSettings, language, stats);
+  }
+  
+  if (isAskingAboutStats(message)) {
+    return generateStatsMessage(stats, language);
+  }
+  
+  const categoryId = parseProductCategory(message, categories);
+  if (categoryId) {
+    const categoryProducts = products.filter(p => p.categoryId === categoryId);
+    const category = categories.find(c => c.id === categoryId);
+    const categoryName = category ? 
+      (category.name[language] || category.name[LanguageCode.EN]) : 
+      'Unknown';
+    return generateCategoryProductsMessage(categoryProducts, categoryName, language, currencySymbol);
+  }
+  
+  const productNumber = parseProductRequest(message);
+  if (productNumber && productNumber <= products.length && productNumber > 0) {
+    const product = products[productNumber - 1];
+    if (product) {
+      return generateProductDetailsMessage(product, language, currencySymbol);
+    }
+  }
+  
+  if (isAskingAboutProducts(message)) {
+    return generateProductsListMessage(products, language, currencySymbol);
+  }
+  
+  if (isAskingAboutOrdering(message)) {
+    return generateOrderingInstructionsMessage(language);
+  }
+  
+  if (isAskingAboutPayments(message)) {
+    return generatePaymentMethodsMessage(language);
+  }
+  
+  if (isAskingAboutShipping(message)) {
+    return generateShippingInfoMessage(language);
+  }
+  
+  if (isAskingAboutContact(message)) {
+    return generateContactMessage(language, storeSettings.whatsappNumber);
+  }
+  
+  return language === LanguageCode.AR
+    ? `🤖 أعتذر، لم أفهم طلبك بوضوح. يمكنك أن تسأل عن:\n\n` +
+      `🛍️ المنتجات - اكتب "المنتجات" (${stats.totalProducts} منتج متاح)\n` +
+      `🆕 المنتجات الجديدة - اكتب "جديد"\n` +
+      `📊 إحصائيات المتجر - اكتب "إحصائيات"\n` +
+      `🏪 معلومات المتجر - اكتب "عن المتجر"\n` +
+      `📞 التواصل - اكتب "تواصل"`
+    : `🤖 Sorry, I didn't understand your request. You can ask about:\n\n` +
+      `🛍️ Products - type "products" (${stats.totalProducts} available)\n` +
+      `🆕 New products - type "new"\n` +
+      `📊 Store statistics - type "stats"\n` +
+      `🏪 Store information - type "about"\n` +
+      `📞 Contact - type "contact"`;
+};
+
+/**
+ * فحص ما إذا كان المستخدم يريد بدء محادثة جديدة
+ * @param message رسالة المستخدم
+ * @returns true إذا كان المستخدم يريد بدء محادثة جديدة
+ */
+export const isRequestingNewConversation = (message: string): boolean => {
+  const lowerMessage = message.toLowerCase();
+  
+  const arabicPatterns = [
+    'محادثة جديدة',
+    'محادثه جديده',
+    'مسح المحادثة',
+    'مسح المحادثه',
+    'حذف المحادثة',
+    'حذف المحادثه',
+    'ابدأ من جديد',
+    'ابدا من جديد',
+    'بداية جديدة',
+    'بدايه جديده',
+    'امسح الشات',
+    'امسح الكلام',
+    'نظف الشات',
+    'صفحة جديدة',
+    'صفحه جديده',
+    'ريست',
+    'reset',
+    'جديد',
+    'من البداية',
+    'من البدايه'
+  ];
+  
+  const englishPatterns = [
+    'new conversation',
+    'new chat',
+    'clear chat',
+    'clear conversation',
+    'delete chat',
+    'delete conversation',
+    'reset chat',
+    'reset conversation',
+    'start over',
+    'start again',
+    'fresh start',
+    'clean slate',
+    'new start',
+    'restart',
+    'clear all',
+    'clear history',
+    'reset',
+    'refresh'
+  ];
+  
+  return [...arabicPatterns, ...englishPatterns].some(pattern => 
+    lowerMessage.includes(pattern)
+  );
+};
+
+/**
+ * إنشاء رسالة ترحيب لمحادثة جديدة
+ * @param language اللغة المستخدمة
+ * @param storeSettings إعدادات المتجر
+ * @returns رسالة ترحيب مخصصة
+ */
+export const generateNewConversationWelcomeMessage = (
+  language: LanguageCode,
+  storeSettings: StoreSettings
+): string => {
+  const storeName = storeSettings.storeName;
+  const currentDate = new Date().toLocaleDateString(
+    language === LanguageCode.AR ? 'ar-EG' : 'en-US'
+  );
+  
+  let message = '';
+  
+  if (language === LanguageCode.AR) {
+    message = `🌟 **مرحباً بك في محادثة جديدة مع ${storeName}!** 🌟\n\n`;
+    message += `📅 **التاريخ:** ${currentDate}\n`;
+    message += `🤖 **أنا مساعدك الذكي في جينكرو**\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `✨ **ماذا يمكنني أن أساعدك اليوم؟**\n\n`;
+    message += `🛍️ **اكتب "المنتجات"** لرؤية منتجاتنا المميزة\n`;
+    message += `🆕 **اكتب "جديد"** لرؤية آخر المنتجات\n`;
+    message += `🏷️ **اكتب "رجال" أو "نساء"** لفئة معينة\n`;
+    message += `📊 **اكتب "إحصائيات"** لمعرفة أرقام المتجر\n`;
+    message += `🏪 **اكتب "عن المتجر"** لمعرفة المزيد عنا\n`;
+    message += `📞 **اكتب "تواصل"** للحصول على معلومات التواصل\n`;
+    message += `🛒 **اكتب "كيف أطلب"** لمعرفة طريقة الطلب\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `💡 **نصيحة:** يمكنك كتابة أي سؤال وسأحاول مساعدتك!\n`;
+    message += `🔄 **لبدء محادثة جديدة مرة أخرى:** اكتب "محادثة جديدة"`;
+  } else {
+    message = `🌟 **Welcome to a new conversation with ${storeName}!** 🌟\n\n`;
+    message += `📅 **Date:** ${currentDate}\n`;
+    message += `🤖 **I'm your smart assistant at Jeancro**\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `✨ **How can I help you today?**\n\n`;
+    message += `🛍️ **Type "products"** to see our featured items\n`;
+    message += `🆕 **Type "new"** to see our latest products\n`;
+    message += `🏷️ **Type "men" or "women"** for specific categories\n`;
+    message += `📊 **Type "stats"** to see store statistics\n`;
+    message += `🏪 **Type "about"** to learn more about us\n`;
+    message += `📞 **Type "contact"** for contact information\n`;
+    message += `🛒 **Type "how to order"** to learn how to place orders\n\n`;
+    message += `━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `💡 **Tip:** You can ask me any question and I'll try to help!\n`;
+    message += `🔄 **To start a new conversation again:** type "new conversation"`;
+  }
+  
+  return message;
+};
+
+/**
+ * إنشاء رسالة تأكيد مسح المحادثة
+ * @param translations الترجمات المتاحة
+ * @returns رسالة تأكيد المسح
+ */
+export const generateConversationClearedMessage = (translations: Translations): string => {
+  return `🧹 ${translations.chatCleared}\n\n✨ ${translations.chatWelcomeNew}`;
 };

@@ -60,6 +60,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [faqs, setFaqs] = useState<FAQ[]>(() => 
     loadFromLocalStorage('jeancro-faqs', INITIAL_FAQS)
   );
+  
   // حالات واجهة المستخدم
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -106,6 +107,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     saveToLocalStorage('jeancro-admin-loggedin', isAdminLoggedIn);
   }, [isAdminLoggedIn]);
+
   // دوال الترجمة
   const translations = TRANSLATIONS[currentLanguage];
   const t = useCallback(
@@ -154,6 +156,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const clearCart = () => {
     setCartItems([]);
+    showToast(t('cartUpdated'), 'info');
   };
 
   // وظائف إدارة اللغة
@@ -166,7 +169,63 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // وظائف إدارة Chatbot
   const toggleChatbot = () => setIsChatbotOpen(!isChatbotOpen);
 
+  // وظيفة مسح رسائل الشات
+  const clearChatMessages = () => {
+    setChatMessages([]);
+    showToast(
+      translations.chatCleared, 
+      'info'
+    );
+  };
+
   const sendChatMessage = async (messageText: string) => {
+    // فحص ما إذا كان المستخدم يطلب محادثة جديدة
+    const context = {
+      products,
+      categories,
+      storeSettings
+    };
+
+    // استخدام processUserMessage للفحص المبدئي
+    const { processUserMessage, isRequestingNewConversation } = await import('../utils/chatbotHelper');
+    
+    // إذا كان يطلب محادثة جديدة، امسح الرسائل أولاً
+    if (isRequestingNewConversation(messageText)) {
+      setChatMessages([]); // مسح الرسائل السابقة
+      
+      // إنشاء رسالة المستخدم
+      const userMessage: ChatMessage = {
+        id: generateId(),
+        text: messageText,
+        sender: 'user',
+        timestamp: new Date(),
+      };
+      setChatMessages([userMessage]);
+      
+      setIsChatLoading(true);
+        // معالجة الطلب وإنشاء رد مناسب
+      const welcomeResponse = processUserMessage(messageText, context, currentLanguage);
+      
+      const botMessage: ChatMessage = {
+        id: generateId(),
+        text: welcomeResponse,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      
+      setChatMessages([userMessage, botMessage]);
+      setIsChatLoading(false);
+      
+      showToast(
+        currentLanguage === LanguageCode.AR
+          ? 'تم بدء محادثة جديدة!'
+          : 'New conversation started!',
+        'success'
+      );
+      return;
+    }
+
+    // معالجة الرسائل العادية
     const userMessage: ChatMessage = {
       id: generateId(),
       text: messageText,
@@ -181,13 +240,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         role: msg.sender === 'user' ? ('user' as const) : ('model' as const),
         parts: [{ text: msg.text }],
       }))
-      .filter(msg => msg.role === 'user' || msg.role === 'model');    try {
+      .filter(msg => msg.role === 'user' || msg.role === 'model');
+
+    try {
       const botResponseText = await getChatbotResponse(
         messageText,
         historyForGemini,
         faqs,
         currentLanguage,
-        products
+        products,
+        storeSettings,
+        categories
       );
       const botMessage: ChatMessage = {
         id: generateId(),
@@ -266,6 +329,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     syncWithConstants();
   }, [syncWithConstants]);
+
   return (
     <AppContext.Provider
       value={{
@@ -295,6 +359,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         toggleChatbot,
         chatMessages,
         sendChatMessage,
+        clearChatMessages,
         isChatLoading,
         isAdminLoggedIn,
         loginAdmin,
@@ -302,7 +367,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         showToast,
         toast,
         setToast,
-      }}    >
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

@@ -58,12 +58,12 @@ export interface AppContextType {
   // إدارة الأسئلة الشائعة
   faqs: FAQ[];
   setFaqs: React.Dispatch<React.SetStateAction<FAQ[]>>;
-  
-  // إدارة Chatbot
+    // إدارة Chatbot
   isChatbotOpen: boolean;
   toggleChatbot: () => void;
   chatMessages: ChatMessage[];
   sendChatMessage: (message: string) => Promise<void>;
+  clearChatMessages: () => void; // إضافة وظيفة مسح رسائل الشات
   isChatLoading: boolean;
   
   // إدارة المسؤول
